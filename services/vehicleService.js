@@ -9,6 +9,14 @@ class VehicleService {
       return new Error(error);
     }
   }
+  async getByPlate(plate) {
+    try {
+      const data = await Vehicle.findOne({ where: { plate } });
+      return data;
+    } catch (error) {
+      return new Error(error);
+    }
+  }
 
   async getAll() {
     try {

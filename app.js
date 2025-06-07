@@ -2,8 +2,10 @@ import express from "express";
 import bodyParser from "body-parser";
 import database from "./config/db.js";
 
-import vehicleRouter from "./routes/vehicle.js";
 import "./models/index.js";
+
+import vehicleRouter from "./routes/vehicle.js";
+import clientRouter from "./routes/client.js";
 
 const app = express();
 
@@ -11,10 +13,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/vehicle", vehicleRouter);
+app.use("/client", clientRouter);
 
-app.get("/", (res) => {
-  res.send("Health");
-});
+app.get("/", (res) => res.send("Health"));
 
 (async () => {
   try {
