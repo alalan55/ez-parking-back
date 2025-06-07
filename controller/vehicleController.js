@@ -1,4 +1,5 @@
 import VehicleService from "../services/vehicleService.js";
+import { ResponseHandler } from "../helpers/helpers.js";
 
 const vehicleService = new VehicleService();
 
@@ -6,31 +7,31 @@ class VehicleController {
   async getAll(req, res) {
     try {
       const datas = await vehicleService.getAll();
-      res
-        .status(200)
-        .send({ message: "Vehicle list retrieved", content: datas });
+      res.status(200).send(ResponseHandler("Vehicle list retrieved", datas));
     } catch (error) {
-      res.status(404).send({ message: "Vehicles not founded", content: null });
+      res.status(404).send(ResponseHandler("Vehicles not founded", null));
     }
   }
 
   async getById(req, res) {
     try {
       const vehicle = await vehicleService.getById(req.params.id);
-      res.status(200).send({ message: "Vehicle retrieved:", content: vehicle });
+
+      if (!vehicle)
+        return res.status(404).send(ResponseHandler("Vehicle not found"));
+
+      res.status(200).send(ResponseHandler("Vehicle retrieved:", vehicle));
     } catch (error) {
-      res.status(404).send({ message: "Vehicle not found", content: null });
+      res.status(404).send(ResponseHandler("Vehicle not found"));
     }
   }
 
   async create(req, res) {
     try {
       const newVehicle = await vehicleService.createVehicle(req.body);
-      res.status(201).send({ message: "Vehicle created", content: newVehicle });
+      res.status(201).send(ResponseHandler("Vehicle created", newVehicle));
     } catch (error) {
-      res
-        .status(400)
-        .send({ message: "Falha ao criar veículo", content: null });
+      res.status(400).send(ResponseHandler("Falha ao criar veículo"));
     }
   }
 
@@ -39,20 +40,14 @@ class VehicleController {
       const vehicle = await vehicleService.getById(req.params.id);
 
       if (!vehicle) {
-        return res
-          .status(404)
-          .send({ message: "Vehicle not found", content: null });
+        return res.status(404).send(ResponseHandler("Vehicle not found"));
       }
 
       const updated = await vehicleService.update(req.body);
 
-      return res
-        .status(200)
-        .send({ message: "Vehicle updated", content: updated });
+      return res.status(200).send(ResponseHandler("Vehicle updated", updated));
     } catch (error) {
-      res
-        .status(400)
-        .send({ message: "Fail to update vehicle", content: null });
+      res.status(400).send(ResponseHandler("Fail to update vehicle"));
     }
   }
 
@@ -60,20 +55,13 @@ class VehicleController {
     try {
       const founded = await vehicleService.getById(parseFloat(req.params.id));
       if (!founded) {
-        return res
-          .status(404)
-          .send({ message: "Vehicle not founded", content: null });
+        return res.status(404).send(ResponseHandler("Vehicle not founded"));
       }
       await vehicleService.delete(+req.params.id);
 
-      res
-        .status(200)
-        .send({ message: "Vehicle removed succefully", content: null });
-   
+      res.status(200).send(ResponseHandler("Vehicle removed succefully"));
     } catch (error) {
-      res
-        .status(400)
-        .send({ message: "Fail to remove vehicle", content: null });
+      res.status(400).send(ResponseHandler("Fail to remove vehicle"));
     }
   }
 }
