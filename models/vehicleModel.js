@@ -1,0 +1,26 @@
+import { DataTypes } from "sequelize";
+import sequelize from "../config/db.js";
+
+const Vehicle = sequelize.define("Vehicle", {
+  plate: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  mark: {
+    type: DataTypes.STRING,
+  },
+  model: {
+    type: DataTypes.STRING,
+  },
+  year: {
+    type: DataTypes.NUMBER,
+  },
+  color: {
+    type: DataTypes.STRING,
+  },
+  type: {
+    type: DataTypes.NUMBER,
+  },
+});
+
+export default Vehicle;
