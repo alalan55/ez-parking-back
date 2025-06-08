@@ -24,6 +24,17 @@ class ClientController {
     }
   }
 
+  async addVehicle(req, res) {
+    try {
+      const response = await clientService.addVehicle(req.body);
+      res.status(200).send(ResponseHandler("Vehicle added", response));
+    } catch (error) {
+      res
+        .status(400)
+        .send(ResponseHandler(error.message || "Fail to add vehicle"));
+    }
+  }
+
   async update(req, res) {
     try {
       const response = await clientService.update(req.body);
@@ -65,14 +76,15 @@ class ClientController {
     }
   }
 
-  async addVehicle(req, res) {
+  // remover veículo do cliente 
+  async removeVehicle(req, res) {
     try {
-      const response = await clientService.addVehicle(req.body);
-      res.status(200).send(ResponseHandler("Vehicle added", response));
+      const response = await clientService.removeVehicle(req.body);
+      res.status(200).send(ResponseHandler("Vehicle removed", response));
     } catch (error) {
       res
         .status(400)
-        .send(ResponseHandler(error.message || "Fail to add vehicle"));
+        .send(ResponseHandler(error.message || "Fail to remove vehicle"));
     }
   }
 }

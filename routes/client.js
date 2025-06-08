@@ -12,6 +12,9 @@ router.delete("/:id", (req, res) => controller.delete(req, res));
 router.post("/with-vehicle", (req, res) =>
   controller.createWithVehicle(req, res)
 );
-router.post('/add-vehicle', (req, res) => controller.addVehicle(req, res));
+router.post("/add-vehicle", (req, res) => controller.addVehicle(req, res));
+router.post("/remove-vehicle", (req, res) =>
+  controller.removeVehicle(req, res)
+);
 
 export default router;

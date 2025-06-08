@@ -123,6 +123,26 @@ class ClientService {
       throw error;
     }
   }
+
+  async removeVehicle(payload) {
+    try {
+      const user = await ClientModel.findOne({ where: { id: payload.userId } });
+
+      if (!user) throw new Error("User not found");
+
+      const vehicle = await Vehicle.findOne({
+        where: { id: payload.vehicleId },
+      });
+
+      if (!vehicle) throw new Error("Vehicle not found");
+
+      await user.removeVehicle(vehicle);
+
+      return { user, vehicle };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default ClientService;
