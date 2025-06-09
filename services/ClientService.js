@@ -1,6 +1,5 @@
-import { ClientModel } from "../models/index.js";
+import { ClientModel, Vehicle } from "../models/index.js";
 import VehicleService from "./vehicleService.js";
-import { Vehicle } from "../models/index.js";
 
 const vehicleService = new VehicleService();
 
