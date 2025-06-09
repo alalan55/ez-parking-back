@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import database from "./config/db.js";
+import { swaggerSpec, swaggerUi } from "./config/swagger.js";
 
 import "./models/index.js";
 
@@ -15,7 +16,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/vehicle", vehicleRouter);
 app.use("/client", clientRouter);
 
-app.get("/", (res) => res.send("Health"));
+app.get("/", (req, res) => res.send("Health"));
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 (async () => {
   try {
