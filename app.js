@@ -25,7 +25,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 (async () => {
   try {
     await database.sync();
-    console.log("connection stablieshded");
+    console.log("Database connected");
   } catch (error) {
     console.log("Fail to connect on db:", error);
   }
