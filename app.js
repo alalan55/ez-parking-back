@@ -8,6 +8,7 @@ import "./models/index.js";
 import vehicleRouter from "./routes/vehicle.js";
 import clientRouter from "./routes/client.js";
 import OrganizationRouter from "./routes/organization.js";
+import CollaboratorRouter from "./routes/collaborator.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/vehicle", vehicleRouter);
 app.use("/client", clientRouter);
 app.use("/organization", OrganizationRouter);
+app.use("/collaborator", CollaboratorRouter);
 
 app.get("/", (req, res) => res.send("Health"));
 
