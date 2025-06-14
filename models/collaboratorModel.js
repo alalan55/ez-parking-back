@@ -2,6 +2,13 @@ import { DataTypes } from "sequelize";
 import OrganizationModel from "./organizationModel.js";
 import sequelize from "../config/db.js";
 
+
+const roleEnum = {
+  0: 'Super admin',
+  1: 'Admin',
+  2: 'Normal'
+}
+
 const CollaboratorModel = sequelize.define("Collaborator", {
   name: {
     type: DataTypes.STRING,
@@ -19,11 +26,17 @@ const CollaboratorModel = sequelize.define("Collaborator", {
   role: {
     type: DataTypes.NUMBER,
     allowNull: false,
-    defaultValue: 1,
+    defaultValue: 2,
   },
 });
 
 OrganizationModel.hasMany(CollaboratorModel);
-CollaboratorModel.belongsTo(OrganizationModel);
+
+CollaboratorModel.belongsTo(OrganizationModel, {
+  foreignKey: {
+    allowNull: true,
+  },
+  onDelete: "SET NULL",
+});
 
 export default CollaboratorModel;
