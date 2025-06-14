@@ -1,6 +1,8 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
-import { OrganizationModel, Vehicle } from "./index.js";
+
+import OrganizationModel from "./organizationModel.js";
+import Vehicle from "./vehicleModel.js";
 
 const VacancyModel = sequelize.define("Vacancy", {
   status: {
@@ -9,7 +11,6 @@ const VacancyModel = sequelize.define("Vacancy", {
   },
 });
 
-VacancyModel.hasOne(OrganizationModel);
 VacancyModel.belongsTo(OrganizationModel);
 OrganizationModel.hasMany(VacancyModel);
 
