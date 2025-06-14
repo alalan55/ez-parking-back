@@ -13,6 +13,8 @@ router.post("/organization", (req, res) =>
   controller.addCollaboratorWithOrganization(req, res)
 );
 
+router.post("/checkin", (req, res) => controller.checkin(req, res));
+
 router.get("/organization/:id", (req, res) =>
   controller.getByOrganization(req, res)
 );

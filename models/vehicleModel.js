@@ -1,6 +1,13 @@
 import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
+const enumType = {
+  0: "car",
+  1: "motorcycle",
+  2: "truck",
+  3: "bus",
+};
+
 const Vehicle = sequelize.define("Vehicle", {
   plate: {
     type: DataTypes.STRING,
@@ -20,6 +27,7 @@ const Vehicle = sequelize.define("Vehicle", {
   },
   type: {
     type: DataTypes.NUMBER,
+    defaultValue: 0,
   },
 });
 
