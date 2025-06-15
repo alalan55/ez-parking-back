@@ -129,6 +129,13 @@ class CollaboratorService {
       const organization = await OrganizationModel.findByPk(organizationId);
       if (!organization) throw new HttpError("Organization not found", 404);
 
+      const collaborator = await CollaboratorModel.findOne({
+        where: { id: collaboratorId, organizationId },
+      });
+
+      if (!collaborator)
+        throw new HttpError("Collaborator not found in this organization", 404);
+
       let vehicle = await vehicleService.getByPlate(vehiclePlate);
 
       if (!vehicle) {
@@ -142,113 +149,51 @@ class CollaboratorService {
         });
       }
 
-      const collaborator = await CollaboratorModel.findOne({
-        where: { id: collaboratorId, organizationId },
+      const alreadyParked = await VacancyModel.findOne({
+        where: { vehicleId: vehicle.id, status: 1 },
       });
 
-      if (!collaborator) {
-        throw new HttpError("Collaborator not found in this organization", 404);
-      }
-
-      // verificar se tem vagas registradas
-      const hasVacancies = await VacancyModel.findAll({
-        where: { organizationId },
-      });
-
-      if (!hasVacancies) {
-        const newVacany = await vacancyService.createVacancy(organizationId);
-
-        const updatedVacancy = await vacancyService.updateVacancy(
-          newVacany.id,
-          {
-            status: 1,
-            vehicleId: newVacany.vehicleId,
-          }
-        );
-
-        const obj = {
-          collaboratorId,
-          organizationId,
-          vehicleId: vehicle.id,
-          vacancyId: updatedVacancy.id || vehicle.id,
-        };
-
-        organization.addVacancy(newVacany);
-
-        const checkin = await parkingLogService.createLog(obj);
-
-        return checkin;
-      }
+      if (alreadyParked) throw new HttpError("Vehicle already parked", 400);
 
       const totalVacancies = await VacancyModel.count({
         where: { organizationId },
       });
-
-      const totalVacanciesAvailable = await VacancyModel.count({
-        where: { organizationId, status: 0 },
-      });
-
-      const HAS_NO_AVAILABLE_VACANCY_AND_LIMIT_REACHED =
-        !totalVacanciesAvailable &&
-        organization.vacanciesQuantity <= totalVacancies;
-
-      const CAN_CREATE_NEW_VACANCY =
-        !totalVacanciesAvailable &&
-        organization.vacanciesQuantity > totalVacancies;
-
-      if (HAS_NO_AVAILABLE_VACANCY_AND_LIMIT_REACHED) {
-        throw new HttpError("No available vacancies", 400);
-      }
-
-      if (CAN_CREATE_NEW_VACANCY) {
-        const newVacany = await vacancyService.createVacancy(organizationId);
-        const updatedVacancy = await vacancyService.updateVacancy(
-          newVacany.id,
-          {
-            status: 1,
-            vehicleId: newVacany.vehicleId || vehicle.id,
-          }
-        );
-
-        const obj = {
-          collaboratorId,
-          organizationId,
-          vehicleId: vehicle.id,
-          vacancyId: updatedVacancy.id,
-        };
-
-        const checkin = await parkingLogService.createLog(obj);
-
-        return checkin;
-      }
-
-      // pegar a primeira vaga disponivel
       const availableVacancy = await VacancyModel.findOne({
         where: { organizationId, status: 0 },
       });
 
-      if (!availableVacancy) {
-        throw new HttpError("No available vacancies", 400);
-      }
+      const vacanciesReach = organization.vacanciesQuantity;
 
-      const { id, vehicleId } = availableVacancy;
+      const canCreateNewVacancy =
+        !availableVacancy && totalVacancies < vacanciesReach;
 
-      const updatedVacancy = await vacancyService.updateVacancy(id, {
-        id,
-        status: 1,
-        vehicleId,
-      });
+      const noVacanciesAvailable =
+        !availableVacancy && totalVacancies >= vacanciesReach;
 
-      const obj = {
-        collaboratorId,
-        organizationId,
-        vehicleId: vehicle.id,
-        vacancyId: updatedVacancy.id,
+      const occupyVacancy = async (vaga) => {
+        const updatedVacancy = await vacancyService.updateVacancy(vaga.id, {
+          status: 1,
+          vehicleId: vehicle.id,
+        });
+
+        return parkingLogService.createLog({
+          collaboratorId,
+          organizationId,
+          vehicleId: vehicle.id,
+          vacancyId: updatedVacancy.id,
+        });
       };
 
-      const checkin = await parkingLogService.createLog(obj);
+      if (noVacanciesAvailable)
+        throw new HttpError("No available vacancies", 400);
 
-      return checkin;
+      if (canCreateNewVacancy) {
+        const novaVaga = await vacancyService.createVacancy(organizationId);
+        return await occupyVacancy(novaVaga);
+      }
+
+      // Se há vaga disponível, ocupar
+      return await occupyVacancy(availableVacancy);
     } catch (error) {
       throw error;
     }

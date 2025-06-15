@@ -19,8 +19,6 @@ class VacancyService {
 
       if (!vacancy) throw new Error("Vacancy not found");
 
-      console.log("Updating vacancy with payload:", payload);
-
       Object.assign(vacancy, payload);
 
       await vacancy.save();
@@ -29,7 +27,9 @@ class VacancyService {
         const vehicle = await Vehicle.findOne({
           where: { id: payload.vehicleId },
         });
+
         if (!vehicle) throw new Error("Vehicle not found");
+        
         await vacancy.setVehicle(vehicle);
       }
 
