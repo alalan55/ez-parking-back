@@ -97,17 +97,6 @@ class CollaboratorController {
         .send(ResponseHandler(error.message || "Fail to delete collaborator"));
     }
   }
-
-  async checkin(req, res) {
-    try {
-      const checkin = await collaboratorSerivce.checkin(req.body);
-      res.status(200).send(ResponseHandler("Check-in successful", checkin));
-    } catch (error) {
-      res
-        .status(error.status || 400)
-        .send(ResponseHandler(error.message || "Fail to check-in"));
-    }
-  }
 }
 
 export default CollaboratorController;

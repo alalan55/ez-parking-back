@@ -9,6 +9,7 @@ import vehicleRouter from "./routes/vehicle.js";
 import clientRouter from "./routes/client.js";
 import OrganizationRouter from "./routes/organization.js";
 import CollaboratorRouter from "./routes/collaborator.js";
+import ParkingLogRouter from "./routes/parkingLog.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use("/vehicle", vehicleRouter);
 app.use("/client", clientRouter);
 app.use("/organization", OrganizationRouter);
 app.use("/collaborator", CollaboratorRouter);
+app.use("/parking-log", ParkingLogRouter);
 
 app.get("/", (req, res) => res.send("Health"));
 

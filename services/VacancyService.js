@@ -1,3 +1,4 @@
+import e from "express";
 import { VacancyModel, Vehicle } from "../models/index.js";
 
 class VacancyService {
@@ -29,13 +30,31 @@ class VacancyService {
         });
 
         if (!vehicle) throw new Error("Vehicle not found");
-        
+
         await vacancy.setVehicle(vehicle);
+
+      } else {
+        await vacancy.setVehicle(null);
+        console.log("Vehicle removed from vacancy");
       }
 
       return vacancy;
     } catch (error) {
       throw new Error("Error updating vacancy: " + error.message);
+    }
+  }
+
+  async getVacancyById(vacancyId) {
+    try {
+      const vacancy = await VacancyModel.findOne({
+        where: { id: vacancyId },
+      });
+
+      if (!vacancy) throw new Error("Vacancy not found");
+
+      return vacancy;
+    } catch (error) {
+      throw new Error("Error fetching vacancy: " + error.message);
     }
   }
 }
