@@ -4,6 +4,17 @@ import ParkingLogService from "../services/ParkingLogService.js";
 const parkingLogService = new ParkingLogService();
 
 export default class ParkingLogController {
+
+  async getVacancyLogsByOrgatnization(req, res) {
+    try {
+      const logs = await parkingLogService.getVacancyLogsByOrgatnization(req.params.id);
+      res.status(200).send(ResponseHandler("Logs retrieved", logs));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(ResponseHandler(error.message || "Fail to retrieve logs"));
+    }
+  }
   async getLogsByOganization(req, res) {
     try {
       const logs = await parkingLogService.getLogsByOganization(req.params.id);

@@ -7,7 +7,7 @@ import {
 } from "../models/index.js";
 
 import VacancyService from "./VacancyService.js";
-import VehicleService from "./VehicleService.js";
+import VehicleService from "./vehicleService.js";
 
 const vacancyService = new VacancyService();
 const vehicleService = new VehicleService();
@@ -36,6 +36,35 @@ export default class ParkingLogService {
     }
   }
 
+  async getVacancyLogsByOrgatnization(organizationId) {
+    try {
+      const org = await OrganizationModel.findOne({
+        where: { id: organizationId },
+      });
+
+      if (!org) throw new Error("Organization not found");
+
+      const vacancies = await VacancyModel.findAll({
+        where: { OrganizationId: organizationId },
+        include: [
+          {
+            model: ParkingLogModel,
+            as: "ParkingLogs",
+            include: [
+              { model: OrganizationModel, as: "Organization" },
+              { model: CollaboratorModel, as: "Collaborator" },
+              { model: Vehicle, as: "Vehicle" },
+            ],
+          },
+        ],
+      });
+
+      return vacancies
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getLogsByOganization(organizationId) {
     try {
       const org = await OrganizationModel.findOne({
@@ -50,7 +79,7 @@ export default class ParkingLogService {
           { model: OrganizationModel, as: "Organization" },
           { model: CollaboratorModel, as: "Collaborator" },
           { model: Vehicle, as: "Vehicle" },
-          // { model: VacancyModel, as: "Vacancy" },
+          { model: VacancyModel, as: "Vacancy" },
         ],
       });
 
