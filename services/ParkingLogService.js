@@ -7,7 +7,7 @@ import {
 } from "../models/index.js";
 
 import VacancyService from "./VacancyService.js";
-import VehicleService from "./vehicleService.js";
+import VehicleService from "./VehicleService.js";
 
 const vacancyService = new VacancyService();
 const vehicleService = new VehicleService();
@@ -59,7 +59,16 @@ export default class ParkingLogService {
         ],
       });
 
-      return vacancies
+      const mapped = vacancies.map((vacancy) => {
+        vacancy.log = vacancy.ParkingLogs.filter(
+          (log) => log.id === vacancy.ParkingLogId
+        );
+        console.log("Vacancy log:", vacancy.log);
+
+        return vacancy;
+      });
+
+      return mapped;
     } catch (error) {
       throw error;
     }
@@ -143,12 +152,20 @@ export default class ParkingLogService {
           vehicleId: vehicle.id,
         });
 
-        return this.createLog({
+        const log = await this.createLog({
           collaboratorId,
           organizationId,
           vehicleId: vehicle.id,
           vacancyId: updatedVacancy.id,
         });
+
+        await vacancyService.updateVacancy(vaga.id, {
+          status: 1,
+          vehicleId: vehicle.id,
+          ParkingLogId: log.id,
+        });
+
+        return log;
       };
 
       if (noVacanciesAvailable)
@@ -168,7 +185,9 @@ export default class ParkingLogService {
 
   async checkout(payload) {
     try {
-      const log = await ParkingLogModel.findOne({ where: { id: payload.id } });
+      const log = await ParkingLogModel.findOne({
+        where: { id: payload.logId },
+      });
 
       if (!log) throw new HttpError("Parking log not found", 404);
 
@@ -179,7 +198,8 @@ export default class ParkingLogService {
       if (vacancy.status === 1) {
         await vacancyService.updateVacancy(vacancy.id, {
           status: 0,
-          VehicleId: null,
+          vehicleId: null,
+          ParkingLogId: null,
           OrganizationId: vacancy.OrganizationId,
         });
       }

@@ -73,12 +73,12 @@ class VacancyService {
         include: [
           {
             model: Vehicle,
-            as: "Vehicle",
+           // as: "Vehicle",
           },
           {
             model: ParkingLogModel,
-            as: "ParkingLogs",
-          }
+            as: "activeVacancyLog",
+          },
         ],
       });
 

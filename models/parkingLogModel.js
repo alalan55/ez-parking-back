@@ -10,6 +10,14 @@ const ParkingLogModel = sequelize.define("ParkingLog", {});
 // vacancy
 ParkingLogModel.belongsTo(VacancyModel);
 VacancyModel.hasMany(ParkingLogModel);
+VacancyModel.belongsTo(ParkingLogModel, {
+  as: "activeVacancyLog",
+  foreignKey: {
+    name: "ParkingLogId",
+    allowNull: true,
+  },
+  onDelete: "SET NULL",
+});
 
 // organization
 ParkingLogModel.belongsTo(OrganizationModel);
@@ -22,7 +30,5 @@ CollaboratorModel.hasMany(ParkingLogModel);
 // vehicle
 ParkingLogModel.belongsTo(Vehicle);
 Vehicle.hasMany(ParkingLogModel);
-
-
 
 export default ParkingLogModel;
