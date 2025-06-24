@@ -1,4 +1,9 @@
-import { VacancyModel, Vehicle, ParkingLogModel } from "../models/index.js";
+import {
+  VacancyModel,
+  Vehicle,
+  ParkingLogModel,
+  ClientModel,
+} from "../models/index.js";
 import OrganizationService from "./OrganizationService.js";
 
 const organizationService = new OrganizationService();
@@ -73,7 +78,8 @@ class VacancyService {
         include: [
           {
             model: Vehicle,
-           // as: "Vehicle",
+            // as: "Vehicle",
+            include: [{ model: ClientModel }],
           },
           {
             model: ParkingLogModel,

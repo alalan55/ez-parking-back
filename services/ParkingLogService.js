@@ -59,16 +59,16 @@ export default class ParkingLogService {
         ],
       });
 
-      const mapped = vacancies.map((vacancy) => {
-        vacancy.log = vacancy.ParkingLogs.filter(
-          (log) => log.id === vacancy.ParkingLogId
-        );
-        console.log("Vacancy log:", vacancy.log);
+      // const mapped = vacancies.map((vacancy) => {
+      //   vacancy.log = vacancy.ParkingLogs.filter(
+      //     (log) => log.id === vacancy.ParkingLogId
+      //   );
+      //   console.log("Vacancy log:", vacancy.log);
 
-        return vacancy;
-      });
+      //   return vacancies;
+      // });
 
-      return mapped;
+      return vacancies;
     } catch (error) {
       throw error;
     }
