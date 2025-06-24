@@ -11,7 +11,13 @@ const ClientModel = sequelize.define("Client", {
   },
 });
 
-ClientModel.belongsToMany(Vehicle, { through: "ClientVehicles" });
-Vehicle.belongsToMany(ClientModel, { through: "ClientVehicles" });
+ClientModel.belongsToMany(Vehicle, {
+  through: "ClientVehicles",
+  foreignKey: { name: "clientId" },
+});
+Vehicle.belongsToMany(ClientModel, {
+  through: "ClientVehicles",
+  foreignKey: { name: "vehicleId" },
+});
 
 export default ClientModel;

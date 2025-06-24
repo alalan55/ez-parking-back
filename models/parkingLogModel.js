@@ -8,27 +8,48 @@ import Vehicle from "./vehicleModel.js";
 const ParkingLogModel = sequelize.define("ParkingLog", {});
 
 // vacancy
-ParkingLogModel.belongsTo(VacancyModel);
-VacancyModel.hasMany(ParkingLogModel);
+ParkingLogModel.belongsTo(VacancyModel, {
+  foreignKey: {
+    name: "vacancyId",
+  },
+});
+VacancyModel.hasMany(ParkingLogModel, {
+  foreignKey: {
+    name: "vacancyId",
+  },
+});
+
 VacancyModel.belongsTo(ParkingLogModel, {
   as: "activeVacancyLog",
   foreignKey: {
-    name: "ParkingLogId",
+    name: "parkingLogId",
     allowNull: true,
   },
   onDelete: "SET NULL",
 });
 
 // organization
-ParkingLogModel.belongsTo(OrganizationModel);
-OrganizationModel.hasMany(ParkingLogModel);
+ParkingLogModel.belongsTo(OrganizationModel, {
+  foreignKey: { name: "organizationId" },
+});
+OrganizationModel.hasMany(ParkingLogModel, {
+  foreignKey: { name: "organizationId" },
+});
 
 // collaborator
-ParkingLogModel.belongsTo(CollaboratorModel);
-CollaboratorModel.hasMany(ParkingLogModel);
+ParkingLogModel.belongsTo(CollaboratorModel, {
+  foreignKey: { name: "collaboratorId", allowNull: false },
+});
+CollaboratorModel.hasMany(ParkingLogModel, {
+  foreignKey: { name: "collaboratorId", allowNull: false },
+});
 
 // vehicle
-ParkingLogModel.belongsTo(Vehicle);
-Vehicle.hasMany(ParkingLogModel);
+ParkingLogModel.belongsTo(Vehicle, {
+  foreignKey: { name: "vehicleId", allowNull: false },
+});
+Vehicle.hasMany(ParkingLogModel, {
+  foreignKey: { name: "vehicleId", allowNull: false },
+});
 
 export default ParkingLogModel;

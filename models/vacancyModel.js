@@ -13,17 +13,32 @@ const VacancyModel = sequelize.define("Vacancy", {
   status: {
     type: DataTypes.NUMBER,
     allowNull: false,
-    defaultValue: 0, 
+    defaultValue: 0,
   },
 });
 
-VacancyModel.belongsTo(OrganizationModel);
-OrganizationModel.hasMany(VacancyModel);
+VacancyModel.belongsTo(OrganizationModel, {
+  foreignKey: {
+    name: "organizationId",
+  },
+});
+OrganizationModel.hasMany(VacancyModel, {
+  foreignKey: {
+    name: "organizationId",
+  },
+});
 
 // VEHICLE
-Vehicle.hasOne(VacancyModel);
+Vehicle.hasOne(VacancyModel, {
+  foreignKey: {
+    name: "vehicleId",
+    allowNull: true,
+  },
+  onDelete: "SET NULL",
+});
 VacancyModel.belongsTo(Vehicle, {
   foreignKey: {
+    name: "vehicleId",
     allowNull: true,
   },
   onDelete: "SET NULL",

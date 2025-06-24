@@ -19,7 +19,7 @@ class VacancyService {
   async createVacancy(organizationId) {
     try {
       const vacancy = await VacancyModel.create({
-        OrganizationId: organizationId,
+        organizationId,
       });
 
       return vacancy;
@@ -74,7 +74,7 @@ class VacancyService {
       if (!org) throw new HttpError("Organization not found", 404);
 
       const vacancies = await VacancyModel.findAll({
-        where: { OrganizationId: organizationId },
+        where: { organizationId },
         include: [
           {
             model: Vehicle,

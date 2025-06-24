@@ -23,10 +23,10 @@ export default class ParkingLogService {
   async createLog(payload) {
     try {
       const log = await ParkingLogModel.create({
-        VacancyId: payload.vacancyId,
-        OrganizationId: payload.organizationId,
-        CollaboratorId: payload.collaboratorId,
-        VehicleId: payload.vehicleId,
+        vacancyId: payload.vacancyId,
+        organizationId: payload.organizationId,
+        collaboratorId: payload.collaboratorId,
+        vehicleId: payload.vehicleId,
         // entryTime: payload.entryTime,
         // exitTime: payload.exitTime
       });
@@ -134,6 +134,7 @@ export default class ParkingLogService {
       const totalVacancies = await VacancyModel.count({
         where: { organizationId },
       });
+      
       const availableVacancy = await VacancyModel.findOne({
         where: { organizationId, status: 0 },
       });
@@ -162,7 +163,7 @@ export default class ParkingLogService {
         await vacancyService.updateVacancy(vaga.id, {
           status: 1,
           vehicleId: vehicle.id,
-          ParkingLogId: log.id,
+          parkingLogId: log.id,
         });
 
         return log;
@@ -199,8 +200,8 @@ export default class ParkingLogService {
         await vacancyService.updateVacancy(vacancy.id, {
           status: 0,
           vehicleId: null,
-          ParkingLogId: null,
-          OrganizationId: vacancy.OrganizationId,
+          parkingLogId: null,
+          organizationId: vacancy.organizationId,
         });
       }
 

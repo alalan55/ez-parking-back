@@ -30,11 +30,17 @@ const CollaboratorModel = sequelize.define("Collaborator", {
   },
 });
 
-OrganizationModel.hasMany(CollaboratorModel);
+OrganizationModel.hasMany(CollaboratorModel,{
+   foreignKey: {
+    name: "organizationId",
+    allowNull: true,
+  },
+});
 
 CollaboratorModel.belongsTo(OrganizationModel, {
   foreignKey: {
     allowNull: true,
+    name: "organizationId",
   },
   onDelete: "SET NULL",
 });
