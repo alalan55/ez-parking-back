@@ -7,7 +7,8 @@ export default class VacancyController {
   async getVacanciesDashboard(req, res) {
     try {
       const vacancies = await vacancyService.getVacanciesDashboard(
-        req.params.id
+        req.params.id,
+        req.query
       );
       res
         .status(200)

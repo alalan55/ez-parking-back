@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import {
   VacancyModel,
   Vehicle,
@@ -69,7 +71,9 @@ class VacancyService {
     }
   }
 
-  async getVacanciesDashboard(organizationId) {
+  async getVacanciesDashboard(organizationId, querys) {
+    const { plate } = querys || {};
+
     try {
       const organizationService = new OrganizationService();
 
@@ -78,14 +82,24 @@ class VacancyService {
 
       const occupancy = await organizationService.getOccupation(organizationId);
 
+      const vehicleInclude = {
+        model: Vehicle,
+        as: "Vehicle",
+        include: [{ model: ClientModel }],
+      };
+
+      if (plate) {
+        vehicleInclude.where = {
+          plate: {
+            [Op.like]: `%${plate}%`,
+          },
+        };
+      }
+
       const vacancies = await VacancyModel.findAll({
         where: { organizationId },
         include: [
-          {
-            model: Vehicle,
-            as: "Vehicle",
-            include: [{ model: ClientModel }],
-          },
+          vehicleInclude,
           {
             model: ParkingLogModel,
             as: "activeVacancyLog",
