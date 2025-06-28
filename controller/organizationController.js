@@ -67,6 +67,18 @@ class OrganizationControler {
         .send(ResponseHandler(error.message || "Fail to delete organization"));
     }
   }
+
+  async getOccupation(req, res) {
+    try {
+      const occupation = await organizationService.getOccupation(req.params.id);
+
+      res.status(200).send(ResponseHandler("Occupation retrieved", occupation));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(ResponseHandler(error.message || "Fail to get occupation"));
+    }
+  }
 }
 
 export default OrganizationControler;

@@ -4,9 +4,8 @@ import {
   ParkingLogModel,
   ClientModel,
 } from "../models/index.js";
-import OrganizationService from "./OrganizationService.js";
 
-const organizationService = new OrganizationService();
+import OrganizationService from "./OrganizationService.js";
 
 class HttpError extends Error {
   constructor(message, status) {
@@ -14,6 +13,8 @@ class HttpError extends Error {
     this.status = status;
   }
 }
+
+// const organizationService = new OrganizationService();
 
 class VacancyService {
   async createVacancy(organizationId) {
@@ -70,15 +71,19 @@ class VacancyService {
 
   async getVacanciesDashboard(organizationId) {
     try {
+      const organizationService = new OrganizationService();
+
       const org = await organizationService.findById(organizationId);
       if (!org) throw new HttpError("Organization not found", 404);
+
+      const occupancy = await organizationService.getOccupation(organizationId);
 
       const vacancies = await VacancyModel.findAll({
         where: { organizationId },
         include: [
           {
             model: Vehicle,
-            // as: "Vehicle",
+            as: "Vehicle",
             include: [{ model: ClientModel }],
           },
           {
@@ -88,7 +93,23 @@ class VacancyService {
         ],
       });
 
-      return vacancies;
+      return { vacancies, occupancy };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getVacancysCoutenByStatusAndOrganization(organizationId, status) {
+    try {
+      const organizationService = new OrganizationService();
+      const org = await organizationService.findById(organizationId);
+      if (!org) throw new HttpError("Organization not found", 404);
+
+      const count = await VacancyModel.count({
+        where: { organizationId, status },
+      });
+
+      return count;
     } catch (error) {
       throw error;
     }

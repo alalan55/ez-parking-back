@@ -134,7 +134,7 @@ export default class ParkingLogService {
       const totalVacancies = await VacancyModel.count({
         where: { organizationId },
       });
-      
+
       const availableVacancy = await VacancyModel.findOne({
         where: { organizationId, status: 0 },
       });
@@ -192,7 +192,7 @@ export default class ParkingLogService {
 
       if (!log) throw new HttpError("Parking log not found", 404);
 
-      const vacancy = await vacancyService.getVacancyById(log.VacancyId);
+      const vacancy = await vacancyService.getVacancyById(log.vacancyId);
 
       if (!vacancy) throw new HttpError("Vacancy not found", 404);
 

@@ -1,6 +1,40 @@
+import { or } from "sequelize";
 import { OrganizationModel } from "../models/index.js";
 
+import VacancyService from "./VacancyService.js";
+
+const vacancyService = new VacancyService();
+
 class OrganizationService {
+  async getOccupation(organizationId) {
+    try {
+      const organization = await OrganizationModel.findOne({
+        where: { id: organizationId },
+      });
+
+      if (!organization) throw new Error("Organization not found");
+
+      const occupied =
+        await vacancyService.getVacancysCoutenByStatusAndOrganization(
+          organizationId,
+          1
+        );
+
+      const occupiedPercentage =
+        (occupied / organization.vacanciesQuantity) * 100;
+
+      const available = organization.vacanciesQuantity - occupied;
+
+      return {
+        occupied,
+        available,
+        occupiedPercentage,
+        organizationVacancies: organization.vacanciesQuantity,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
   async create(payload) {
     try {
       const { name, address, email, phone, logo, vacanciesQuantity } = payload;

@@ -12,12 +12,13 @@ import OrganizationRouter from "./routes/organization.js";
 import CollaboratorRouter from "./routes/collaborator.js";
 import ParkingLogRouter from "./routes/parkingLog.js";
 import VacancyRouter from "./routes/vacancy.js";
+import DashboardRouter from "./routes/dashboard.js";
 
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({origin: "*"}));
+app.use(cors({ origin: "*" }));
 
 app.use("/vehicle", vehicleRouter);
 app.use("/client", clientRouter);
@@ -25,6 +26,7 @@ app.use("/organization", OrganizationRouter);
 app.use("/collaborator", CollaboratorRouter);
 app.use("/parking-log", ParkingLogRouter);
 app.use("/vacancy", VacancyRouter);
+app.use("/dash", DashboardRouter);
 
 app.get("/", (req, res) => res.send("Health"));
 
