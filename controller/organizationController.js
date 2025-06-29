@@ -53,7 +53,9 @@ class OrganizationControler {
       const org = await organizationService.update(req.body);
       res.status(200).send(ResponseHandler("Organization updated", org));
     } catch (error) {
-      res.send(ResponseHandler(error.message || "Fail to update organization"));
+      res
+        .status(error.status || 400)
+        .send(ResponseHandler(error.message || "Fail to update organization"));
     }
   }
 

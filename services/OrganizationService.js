@@ -3,6 +3,13 @@ import { OrganizationModel } from "../models/index.js";
 
 import VacancyService from "./VacancyService.js";
 
+class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}
+
 const vacancyService = new VacancyService();
 
 class OrganizationService {
@@ -78,6 +85,16 @@ class OrganizationService {
       const org = await this.findById(payload.id);
 
       if (!org) throw new Error("Organization not found");
+
+      const orgVacancyCount =
+        await vacancyService.getVacanciesCountByOrganization(payload.id);
+
+      if (payload.vacanciesQuantity < orgVacancyCount) {
+        throw new HttpError(
+          "Cannot update organization with less vacancies than current occupied",
+          400
+        );
+      }
 
       org.name = payload.name;
       org.address = payload.address;

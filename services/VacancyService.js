@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, or } from "sequelize";
 
 import {
   VacancyModel,
@@ -124,6 +124,38 @@ class VacancyService {
       });
 
       return count;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getVacanciesByOrganization(organizationId) {
+    try {
+      const organizationService = new OrganizationService();
+      const org = await organizationService.findById(organizationId);
+      if (!org) throw new HttpError("Organization not found", 404);
+
+      const vacancies = await VacancyModel.findAll({
+        where: { organizationId },
+      });
+
+      return vacancies;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getVacanciesCountByOrganization(organizationId) {
+    try {
+      const organizationService = new OrganizationService();
+      const org = await organizationService.findById(organizationId);
+      if (!org) throw new HttpError("Organization not found", 404);
+
+      const vacanciesCount = await VacancyModel.count({
+        where: { organizationId },
+      });
+
+      return vacanciesCount;
     } catch (error) {
       throw error;
     }
