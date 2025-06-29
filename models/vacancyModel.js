@@ -37,6 +37,7 @@ Vehicle.hasOne(VacancyModel, {
   onDelete: "SET NULL",
 });
 VacancyModel.belongsTo(Vehicle, {
+  as: "vehicle",
   foreignKey: {
     name: "vehicleId",
     allowNull: true,

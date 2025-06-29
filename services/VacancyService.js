@@ -84,7 +84,7 @@ class VacancyService {
 
       const vehicleInclude = {
         model: Vehicle,
-        as: "Vehicle",
+        as: "vehicle",
         include: [{ model: ClientModel }],
       };
 
