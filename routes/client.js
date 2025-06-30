@@ -4,6 +4,14 @@ import ClientController from "../controller/clientController.js";
 const router = express.Router();
 const controller = new ClientController();
 
+router.get("/get-all-by-organization/:id", (req, res) =>
+  controller.getAllClientsFromOrganization(req, res)
+);
+
+router.delete("/delete-from-organization/:organizationId/:id", (req, res) =>
+  controller.deleteFromOrganization(req, res)
+);
+
 router.post("/", (req, res) => controller.create(req, res));
 router.get("/", (req, res) => controller.getAllUsers(req, res));
 router.put("/", (req, res) => controller.update(req, res));

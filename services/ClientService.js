@@ -1,16 +1,34 @@
-import { ClientModel, Vehicle } from "../models/index.js";
+import { Op } from "sequelize";
+
+import { ClientModel, Vehicle, OrganizationModel } from "../models/index.js";
 import VehicleService from "./VehicleService.js";
+import OrganizationService from "./OrganizationService.js";
 
 const vehicleService = new VehicleService();
+const organizationService = new OrganizationService();
+
+class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}
 
 class ClientService {
   async create(payload) {
+    const organizationService = new OrganizationService();
+
     try {
-      const { name, phone } = payload;
+      const { name, phone, organizationId } = payload;
+
       const newUser = await ClientModel.create({
         name,
         phone,
       });
+
+      const organization = await organizationService.findById(organizationId);
+
+      if (organization) await newUser.addOrganization(organization);
 
       return newUser;
     } catch (error) {
@@ -85,10 +103,62 @@ class ClientService {
     }
   }
 
+  async getAllClientsByOrganization(organizationId, querys) {
+    try {
+      const { name } = querys || {};
+
+      const organization = await organizationService.findById(organizationId);
+
+      if (!organization) throw new HttpError("Organization not found", 404);
+
+      const clientInclude = {};
+
+      if (name) {
+        clientInclude.where = {
+          name: {
+            [Op.like]: `%${name}%`,
+          },
+        };
+      }
+
+      const clients = await ClientModel.findAll({
+        where: clientInclude.where || {},
+        include: [
+          {
+            model: OrganizationModel,
+            where: { id: organizationId },
+            attributes: [], // Não retorna dados do organization
+            through: { attributes: [] }, // Não retorna dados da tabela intermediária
+          },
+        ],
+      });
+
+      return clients;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete(id) {
     try {
       const user = await ClientModel.findOne({ where: { id } });
       if (!user) throw new Error("User not found");
+
+      await user.destroy();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteFromOrganization(organizationId, userId) {
+    try {
+      const organization = await organizationService.findById(organizationId);
+      if (!organization) throw new HttpError("Organization not found", 404);
+
+      const user = await ClientModel.findOne({ where: { id: userId } });
+      if (!user) throw new Error("User not found");
+
+      await user.removeOrganization(organization);
 
       await user.destroy();
     } catch (error) {

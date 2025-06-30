@@ -67,6 +67,25 @@ class ClientController {
     }
   }
 
+  async getAllClientsFromOrganization(req, res) {
+    try {
+      const clients = await clientService.getAllClientsByOrganization(
+        +req.params.id,
+        req.query
+      );
+
+      res.status(200).send(ResponseHandler("Clients retrieved:", clients));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(
+          ResponseHandler(
+            error.message || "Fail to get users from organization"
+          )
+        );
+    }
+  }
+
   async delete(req, res) {
     try {
       await clientService.delete(req.params.id);
@@ -76,7 +95,25 @@ class ClientController {
     }
   }
 
-  // remover veículo do cliente 
+  async deleteFromOrganization(req, res) {
+    try {
+      await clientService.deleteFromOrganization(
+        +req.params.organizationId,
+        +req.params.id
+      );
+      res.status(200).send(ResponseHandler("User deleted from organization"));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(
+          ResponseHandler(
+            res.message || "Fail to delete user from organization"
+          )
+        );
+    }
+  }
+
+  // remover veículo do cliente
   async removeVehicle(req, res) {
     try {
       const response = await clientService.removeVehicle(req.body);
