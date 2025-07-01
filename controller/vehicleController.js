@@ -4,6 +4,23 @@ import { ResponseHandler } from "../helpers/helpers.js";
 const vehicleService = new VehicleService();
 
 class VehicleController {
+  async getAllVehiclesFromClient(req, res) {
+    try {
+      const vehicles = await vehicleService.getAllVehiclesFromClient(
+        req.params.id,
+        req.params.organizationId
+      );
+      res
+        .status(200)
+        .send(ResponseHandler("Vehicles retrieved from client", vehicles));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(
+          ResponseHandler(error.message || "Fail to get vehicles from client")
+        );
+    }
+  }
   async getAll(req, res) {
     try {
       const datas = await vehicleService.getAll();

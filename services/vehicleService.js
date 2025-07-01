@@ -1,5 +1,14 @@
-import { Vehicle } from "../models/index.js";
+import { Vehicle, OrganizationModel, ClientModel } from "../models/index.js";
+import OrganizationService from "./OrganizationService.js";
 
+const organizationService = new OrganizationService();
+
+class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}
 class VehicleService {
   async getById(id) {
     try {
@@ -9,6 +18,7 @@ class VehicleService {
       return new Error(error);
     }
   }
+
   async getByPlate(plate) {
     try {
       const data = await Vehicle.findOne({ where: { plate } });
@@ -37,6 +47,16 @@ class VehicleService {
         color: infos.color,
         type: infos.type,
       });
+
+      const organization = await organizationService.findById(
+        infos.organizatonId
+      );
+
+      if (!organization) {
+        throw new Error("Organization not found");
+      }
+
+      await newVehicle.addOrganizations(organization);
 
       return newVehicle;
     } catch (error) {
@@ -67,6 +87,35 @@ class VehicleService {
   async delete(id) {
     try {
       await Vehicle.destroy({ where: { id } });
+    } catch (error) {
+      return new Error(error);
+    }
+  }
+
+  async getAllVehiclesFromClient(id, organizationId) {
+    try {
+      const organization = await organizationService.findById(organizationId);
+
+      if (!organization) throw new HttpError("Organization not found", 404);
+
+      const vehicles = await Vehicle.findAll({
+        include: [
+          {
+            model: OrganizationModel,
+            where: { id: organizationId },
+            attributes: [],
+            through: { attributes: [] },
+          },
+          {
+            model: ClientModel,
+            where: { id },
+            attributes: [],
+            through: { attributes: [] },
+          },
+        ],
+      });
+
+      return vehicles;
     } catch (error) {
       return new Error(error);
     }

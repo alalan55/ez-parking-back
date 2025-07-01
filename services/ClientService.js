@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 
 import { ClientModel, Vehicle, OrganizationModel } from "../models/index.js";
-import VehicleService from "./VehicleService.js";
+import VehicleService from "./vehicleService.js";
 import OrganizationService from "./OrganizationService.js";
 
 const vehicleService = new VehicleService();
@@ -168,9 +168,18 @@ class ClientService {
 
   async addVehicle(payload) {
     try {
+      const vehicleService = new VehicleService();
+
       const user = await ClientModel.findOne({ where: { id: payload.userId } });
 
       if (!user) throw new Error("User not found");
+
+      const organization = await organizationService.findById(
+        payload.organizatonId
+      );
+
+
+      if (!organization) throw new HttpError("Organization not found", 404);
 
       let vehicle = await vehicleService.getByPlate(payload.plate);
 
@@ -182,10 +191,12 @@ class ClientService {
           year: payload.year,
           color: payload.color,
           type: payload.type,
+          organizatonId: payload.organizatonId,
         });
       }
 
       await user.addVehicle(vehicle);
+      await vehicle.addOrganizations(organization);
 
       return { user, vehicle };
     } catch (error) {

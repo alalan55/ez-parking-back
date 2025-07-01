@@ -1,4 +1,5 @@
 import { DataTypes } from "sequelize";
+import OrganizationModel from "./organizationModel.js";
 import sequelize from "../config/db.js";
 
 const enumType = {
@@ -30,5 +31,16 @@ const Vehicle = sequelize.define("Vehicle", {
     defaultValue: 0,
   },
 });
+
+Vehicle.belongsToMany(OrganizationModel, {
+  through: "OrganizationVehicles", 
+  foreignKey: { name: "vehicleId" },
+});
+
+OrganizationModel.belongsToMany(Vehicle, {
+  through: "OrganizationVehicles",  
+  foreignKey: { name: "organizationId" },
+});
+
 
 export default Vehicle;

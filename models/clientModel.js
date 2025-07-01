@@ -23,13 +23,11 @@ Vehicle.belongsToMany(ClientModel, {
 });
 
 ClientModel.belongsToMany(OrganizationModel, {
-//  as: 'client',
   through: "ClientOrganizations",
   foreignKey: { name: "clientId" },
 });
 
 OrganizationModel.belongsToMany(ClientModel, {
- // as: 'organization',
   through: "ClientOrganizations",
   foreignKey: { name: "organizationId" },
 });
