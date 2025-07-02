@@ -1,7 +1,15 @@
+import { z } from "zod";
 import { ResponseHandler } from "../helpers/helpers.js";
 import CollaboratorService from "../services/CollaboratorService.js";
 
 const collaboratorSerivce = new CollaboratorService();
+
+const addCollaboratorWithOrganizationSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email format"),
+  photo: z.string().optional(),
+  organizationId: z.number().min(1, "Organization ID is required"),
+});
 
 class CollaboratorController {
   async getAll(req, res) {
@@ -50,8 +58,13 @@ class CollaboratorController {
 
   async addCollaboratorWithOrganization(req, res) {
     try {
-      if (!req.body.organizationId) {
-        throw new Error("Organization ID is required");
+      const validated = addCollaboratorWithOrganizationSchema.safeParse(
+        req.body
+      );
+
+      if (!validated.success) {
+        const errors = validated.error.errors.map((err) => err.message);
+        return res.status(400).send(ResponseHandler(errors));
       }
 
       const collaborator =

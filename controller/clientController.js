@@ -1,31 +1,86 @@
+import { z } from "zod";
 import { ResponseHandler } from "../helpers/helpers.js";
 import ClientService from "../services/ClientService.js";
 
 const clientService = new ClientService();
 
+const createUserSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  phone: z.string().optional(),
+  organizationId: z.number().min(1, "Organization ID is required"),
+});
+
+const createUserWithVehicleSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  phone: z.string().optional(),
+  plate: z.string().min(1, "Plate is required"),
+  mark: z.string().min(1, "Mark is required"),
+  model: z.string().min(1, "Model is required"),
+  year: z.number().min(1, "Year is required"),
+  color: z.string().optional(),
+  type: z.number().min(0, "Type is required"),
+  organizationId: z.number().min(1, "Organization ID is required"),
+});
+
+const addVehicleSchema = z.object({
+  userId: z.number().min(1, "User ID is required"),
+  plate: z.string().min(1, "Plate is required"),
+  mark: z.string().min(1, "Mark is required"),
+  model: z.string().min(1, "Model is required"),
+  year: z.number().min(1, "Year is required"),
+  color: z.string().optional(),
+  type: z.number().min(0, "Type is required"),
+  organizationId: z.number().min(1, "Organization ID is required"),
+});
+
 class ClientController {
   async create(req, res) {
     try {
+      const validated = createUserSchema.safeParse(req.body);
+
+      if (!validated.success) {
+        const errors = validated.error.errors.map((err) => err.message);
+        return res.status(400).send(ResponseHandler(errors));
+      }
+
       const newUser = await clientService.create(req.body);
       res.status(201).send(ResponseHandler("User creted", newUser));
     } catch (error) {
-      res.status(400).send(ResponseHandler("Fail on create client"));
+      res
+        .status(400)
+        .send(ResponseHandler(error.message || "Fail to create user"));
     }
   }
 
   async createWithVehicle(req, res) {
     try {
+      const validated = createUserWithVehicleSchema.safeParse(req.body);
+
+      if (!validated.success) {
+        const errors = validated.error.errors.map((err) => err.message);
+        return res.status(400).send(ResponseHandler(errors));
+      }
+
       const response = await clientService.createWithVehicle(req.body);
       res.status(201).send(ResponseHandler("Created", response));
     } catch (error) {
       res
         .status(400)
-        .send(ResponseHandler("Fail to create client with vehicle"));
+        .send(
+          ResponseHandler(error.message || "Fail to create user with vehicle")
+        );
     }
   }
 
   async addVehicle(req, res) {
     try {
+      const validated = addVehicleSchema.safeParse(req.body);
+
+      if (!validated.success) {
+        const errors = validated.error.errors.map((err) => err.message);
+        return res.status(400).send(ResponseHandler(errors));
+      }
+
       const response = await clientService.addVehicle(req.body);
       res.status(200).send(ResponseHandler("Vehicle added", response));
     } catch (error) {

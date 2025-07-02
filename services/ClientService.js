@@ -48,12 +48,14 @@ class ClientService {
           year: payload.year,
           color: payload.color,
           type: payload.type,
+          organizationId: payload.organizationId,
         });
       }
 
       const newUser = await this.create({
         name: payload.name,
         phone: payload.phone,
+        organizationId: payload.organizationId,
       });
 
       await newUser.addVehicle(foundedVehicle);
@@ -175,9 +177,8 @@ class ClientService {
       if (!user) throw new Error("User not found");
 
       const organization = await organizationService.findById(
-        payload.organizatonId
+        payload.organizationId
       );
-
 
       if (!organization) throw new HttpError("Organization not found", 404);
 
@@ -191,7 +192,7 @@ class ClientService {
           year: payload.year,
           color: payload.color,
           type: payload.type,
-          organizatonId: payload.organizatonId,
+          organizationId: payload.organizationId,
         });
       }
 
