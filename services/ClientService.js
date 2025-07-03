@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 
 import { ClientModel, Vehicle, OrganizationModel } from "../models/index.js";
-import VehicleService from "./vehicleService.js";
+import VehicleService from "./VehicleService.js";
 import OrganizationService from "./OrganizationService.js";
 
 const vehicleService = new VehicleService();

@@ -49,12 +49,11 @@ class VehicleService {
       });
 
       const organization = await organizationService.findById(
-        infos.organizatonId
+        infos.organizationId
       );
 
-      if (!organization) {
-        throw new Error("Organization not found");
-      }
+      if (!organization)
+        throw new Error("Organization not found to add vehicle");
 
       await newVehicle.addOrganizations(organization);
 

@@ -77,11 +77,16 @@ class ClientController {
       const validated = addVehicleSchema.safeParse(req.body);
 
       if (!validated.success) {
-        const errors = validated.error.errors.map((err) => err.message);
+        const errors = validated.error.errors.map((err) => ({
+          field: err.path.join("."),
+          message: err.message,
+        }));
+
         return res.status(400).send(ResponseHandler(errors));
       }
 
       const response = await clientService.addVehicle(req.body);
+      
       res.status(200).send(ResponseHandler("Vehicle added", response));
     } catch (error) {
       res
