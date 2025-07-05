@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import { Vehicle, OrganizationModel, ClientModel } from "../models/index.js";
 import OrganizationService from "./OrganizationService.js";
 
@@ -39,21 +41,34 @@ class VehicleService {
 
   async createVehicle(infos) {
     try {
-      const newVehicle = await Vehicle.create({
-        plate: infos.plate,
-        mark: infos.mark,
-        model: infos.model,
-        year: infos.year,
-        color: infos.color,
-        type: infos.type,
-      });
-
       const organization = await organizationService.findById(
         infos.organizationId
       );
 
       if (!organization)
         throw new Error("Organization not found to add vehicle");
+
+      const existingVehivle = await Vehicle.findOne({
+        where: {
+          plate: {
+            [Op.like]: `%${infos.plate}%`,
+          },
+        },
+      });
+
+      if (existingVehivle) {
+        await exxistingVehivle.addOrganizations(organization);
+        return existingVehivle;
+      }
+
+      const newVehicle = await Vehicle.create({
+        plate: infos.plate.toUpperCase(),
+        mark: infos.mark,
+        model: infos.model,
+        year: infos.year,
+        color: infos.color,
+        type: infos.type,
+      });
 
       await newVehicle.addOrganizations(organization);
 

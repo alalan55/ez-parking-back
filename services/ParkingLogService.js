@@ -122,6 +122,7 @@ export default class ParkingLogService {
           year: payload.vehicleYear,
           color: payload.vehicleColor,
           type: payload.vehicleType,
+          organizationId,
         });
       }
 
