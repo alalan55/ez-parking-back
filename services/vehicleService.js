@@ -57,7 +57,7 @@ class VehicleService {
       });
 
       if (existingVehivle) {
-        await exxistingVehivle.addOrganizations(organization);
+        await existingVehivle.addOrganizations(organization);
         return existingVehivle;
       }
 
