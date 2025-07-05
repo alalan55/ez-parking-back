@@ -9,6 +9,7 @@ const ParkingLogModel = sequelize.define("ParkingLog", {});
 
 // vacancy
 ParkingLogModel.belongsTo(VacancyModel, {
+  as: "vacancy",
   foreignKey: {
     name: "vacancyId",
   },
@@ -30,6 +31,7 @@ VacancyModel.belongsTo(ParkingLogModel, {
 
 // organization
 ParkingLogModel.belongsTo(OrganizationModel, {
+  as: "organization",
   foreignKey: { name: "organizationId" },
 });
 OrganizationModel.hasMany(ParkingLogModel, {
@@ -38,6 +40,7 @@ OrganizationModel.hasMany(ParkingLogModel, {
 
 // collaborator
 ParkingLogModel.belongsTo(CollaboratorModel, {
+  as: "collaborator",
   foreignKey: { name: "collaboratorId", allowNull: false },
 });
 CollaboratorModel.hasMany(ParkingLogModel, {
@@ -46,6 +49,7 @@ CollaboratorModel.hasMany(ParkingLogModel, {
 
 // vehicle
 ParkingLogModel.belongsTo(Vehicle, {
+  as: "vehicle",
   foreignKey: { name: "vehicleId", allowNull: false },
 });
 Vehicle.hasMany(ParkingLogModel, {

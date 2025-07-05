@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ResponseHandler } from "../helpers/helpers.js";
+import { ResponseHandler, ErrorValidationHandler } from "../helpers/helpers.js";
 import ClientService from "../services/ClientService.js";
 
 const clientService = new ClientService();
@@ -24,13 +24,21 @@ const createUserWithVehicleSchema = z.object({
 
 const addVehicleSchema = z.object({
   userId: z.number().min(1, "User ID is required"),
-  plate: z.string().min(1, "Plate is required"),
+  plate: z
+    .string()
+    .min(1, "Plate is required")
+    .max(8, "Plate must be 8 characters or less"),
   mark: z.string().min(1, "Mark is required"),
   model: z.string().min(1, "Model is required"),
   year: z.number().min(1, "Year is required"),
   color: z.string().optional(),
   type: z.number().min(0, "Type is required"),
   organizationId: z.number().min(1, "Organization ID is required"),
+});
+
+const removeVehicleSchema = z.object({
+  userId: z.number().min(1, "User ID is required"),
+  vehicleId: z.number().min(1, "Vehicle ID is required"),
 });
 
 class ClientController {
@@ -77,16 +85,13 @@ class ClientController {
       const validated = addVehicleSchema.safeParse(req.body);
 
       if (!validated.success) {
-        const errors = validated.error.errors.map((err) => ({
-          field: err.path.join("."),
-          message: err.message,
-        }));
+        const err = await ErrorValidationHandler(validated);
 
-        return res.status(400).send(ResponseHandler(errors));
+        return res.status(err.status).send(ResponseHandler(err.errors));
       }
 
       const response = await clientService.addVehicle(req.body);
-      
+
       res.status(200).send(ResponseHandler("Vehicle added", response));
     } catch (error) {
       res
@@ -176,6 +181,13 @@ class ClientController {
   // remover veículo do cliente
   async removeVehicle(req, res) {
     try {
+      const validated = removeVehicleSchema.safeParse(req.body);
+
+      if (!validated.success) {
+        const err = await ErrorValidationHandler(validated);
+        return res.status(err.status).send(ResponseHandler(err.errors));
+      }
+
       const response = await clientService.removeVehicle(req.body);
       res.status(200).send(ResponseHandler("Vehicle removed", response));
     } catch (error) {

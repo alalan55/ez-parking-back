@@ -85,10 +85,10 @@ export default class ParkingLogService {
       const logs = await ParkingLogModel.findAll({
         where: { OrganizationId: organizationId },
         include: [
-          { model: OrganizationModel, as: "Organization" },
-          { model: CollaboratorModel, as: "Collaborator" },
-          { model: Vehicle, as: "Vehicle" },
-          { model: VacancyModel, as: "Vacancy" },
+          { model: OrganizationModel, as: "organization" },
+          { model: CollaboratorModel, as: "collaborator" },
+          { model: Vehicle, as: "vehicle" },
+          { model: VacancyModel, as: "vacancy" },
         ],
       });
 

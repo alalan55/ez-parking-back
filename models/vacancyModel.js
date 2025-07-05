@@ -18,6 +18,7 @@ const VacancyModel = sequelize.define("Vacancy", {
 });
 
 VacancyModel.belongsTo(OrganizationModel, {
+  as: "vacancy",
   foreignKey: {
     name: "organizationId",
   },

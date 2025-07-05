@@ -1,7 +1,23 @@
-import VehicleService from "../services/vehicleService.js";
-import { ResponseHandler } from "../helpers/helpers.js";
+import { z } from "zod";
+
+import VehicleService from "../services/VehicleService.js";
+import { ResponseHandler, ErrorValidationHandler } from "../helpers/helpers.js";
 
 const vehicleService = new VehicleService();
+
+const updateVehicleSchema = z.object({
+  id: z.number().min(1, "ID is required"),
+  plate: z
+    .string()
+    .min(1, "Plate is required")
+    .max(8, "Plate must be 8 characters or less")
+    .optional(),
+  mark: z.string().optional(),
+  model: z.string().optional(),
+  year: z.number().optional(),
+  color: z.string().optional(),
+  type: z.number().optional(),
+});
 
 class VehicleController {
   async getAllVehiclesFromClient(req, res) {
@@ -54,6 +70,12 @@ class VehicleController {
 
   async update(req, res) {
     try {
+      const validated = updateVehicleSchema.safeParse(req.body);
+
+      if (!validated.success) {
+        const err = await ErrorValidationHandler(validated);
+        return res.status(err.status).send(ResponseHandler(err.errors));
+      }
       const vehicle = await vehicleService.getById(req.params.id);
 
       if (!vehicle) {
