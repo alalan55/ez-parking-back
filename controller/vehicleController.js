@@ -103,6 +103,18 @@ class VehicleController {
       res.status(400).send(ResponseHandler("Fail to remove vehicle"));
     }
   }
+  async getClientsBasedOnVehicle(req, res) {
+    try {
+      const clients = await vehicleService.getClientsBasedOnVehicle(
+        req.params.plate
+      );
+      res.status(200).send(ResponseHandler("Clients retrieved", clients));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(ResponseHandler(error.message || "Fail to retrieve clients"));
+    }
+  }
 }
 
 export default VehicleController;

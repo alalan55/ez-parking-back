@@ -77,9 +77,16 @@ class VehicleService {
 
   async update(infos) {
     try {
+      const organization = await organizationService.findById(
+        infos.organizationId
+      );
+
+      if (!organization)
+        throw new Error("Organization not found to add vehicle");
+
       const data = await Vehicle.findOne({ where: { id: infos.id } });
 
-      const { plate, mark, model, year, color, type } = infos;
+      const { plate, mark, model, year, color, type, organizationId } = infos;
 
       data.plate = plate;
       data.mark = mark;
@@ -89,6 +96,9 @@ class VehicleService {
       data.type = type;
 
       await data.save();
+
+      await data.setOrganization(organization);
+
       return data;
     } catch (error) {
       return new Error(error);
@@ -127,6 +137,29 @@ class VehicleService {
       });
 
       return vehicles;
+    } catch (error) {
+      return new Error(error);
+    }
+  }
+
+  async getClientsBasedOnVehicle(plate) {
+    try {
+      const vehicle = await Vehicle.findOne({
+        where: {
+          plate: {
+            [Op.like]: `%${plate}%`,
+          },
+        },
+        include: [
+          {
+            model: ClientModel,
+            as: "clients",
+            through: { attributes: [] },
+          },
+        ],
+      });
+
+      return vehicle.clients || [];
     } catch (error) {
       return new Error(error);
     }

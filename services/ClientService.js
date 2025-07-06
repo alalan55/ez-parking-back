@@ -174,7 +174,7 @@ class ClientService {
 
       const user = await ClientModel.findOne({ where: { id: payload.userId } });
 
-      if (!user) throw new Error("User not found");
+      if (!user) throw new HttpError("User not found", 404);
 
       const organization = await organizationService.findById(
         payload.organizationId
@@ -194,10 +194,21 @@ class ClientService {
           type: payload.type,
           organizationId: payload.organizationId,
         });
+      } else {
+        vehicle = await vehicleService.update({
+          id: vehicle.id,
+          plate: payload.plate,
+          mark: payload.mark,
+          model: payload.model,
+          year: payload.year,
+          color: payload.color,
+          type: payload.type,
+          organizationId: payload.organizationId,
+        });
       }
 
       await user.addVehicle(vehicle);
-      await vehicle.addOrganizations(organization);
+      //  await vehicle.addOrganizations(organization);
 
       return { user, vehicle };
     } catch (error) {

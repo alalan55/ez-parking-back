@@ -85,7 +85,7 @@ class VacancyService {
       const vehicleInclude = {
         model: Vehicle,
         as: "vehicle",
-        include: [{ model: ClientModel }],
+        include: [{ model: ClientModel, as: "clients" }],
       };
 
       if (plate) {

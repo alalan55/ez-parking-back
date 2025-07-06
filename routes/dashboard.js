@@ -3,16 +3,22 @@ import express from "express";
 import ParkingLogController from "../controller/parkingLogController.js";
 import OrganizationControler from "../controller/organizationController.js";
 import VacancyController from "../controller/vacancyController.js";
+import VehicleController from "../controller/vehicleController.js";
 
 const router = express.Router();
 
 const parkingLogController = new ParkingLogController();
 const organizationController = new OrganizationControler();
 const vacancyController = new VacancyController();
+const vehicleController = new VehicleController();
 
 // router.get("/vacancies-by-organization/:id", (req, res) =>
 //   parkingLogController.getVacancyLogsByOrganization(req, res)
 // );
+
+router.get("/clients-based-on-vehicle/:plate", (req, res) =>
+  vehicleController.getClientsBasedOnVehicle(req, res)
+);
 
 router.get("/vacancies-by-organization/:id", (req, res) =>
   vacancyController.getVacanciesDashboard(req, res)
