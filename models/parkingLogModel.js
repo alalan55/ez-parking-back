@@ -1,3 +1,4 @@
+import { DataTypes } from "sequelize";
 import sequelize from "../config/db.js";
 
 import CollaboratorModel from "./collaboratorModel.js";
@@ -5,7 +6,19 @@ import VacancyModel from "./vacancyModel.js";
 import OrganizationModel from "./organizationModel.js";
 import Vehicle from "./vehicleModel.js";
 
-const ParkingLogModel = sequelize.define("ParkingLog", {});
+const ParkingLogModel = sequelize.define("ParkingLog", {
+  entryTime: {
+    type: DataTypes.TIME,
+    allowNull: false,
+  },
+  exitTime: {
+    type: DataTypes.TIME,
+    allowNull: false,
+  },
+  observation: {
+    type: DataTypes.STRING,
+  },
+});
 
 // vacancy
 ParkingLogModel.belongsTo(VacancyModel, {

@@ -21,7 +21,7 @@ const OrganizationModel = sequelize.define("Organization", {
   vacanciesQuantity: {
     type: DataTypes.NUMBER,
     allowNull: false,
-  },
+  }
 });
 
 export default OrganizationModel;
