@@ -27,8 +27,9 @@ export default class ParkingLogService {
         organizationId: payload.organizationId,
         collaboratorId: payload.collaboratorId,
         vehicleId: payload.vehicleId,
-        // entryTime: payload.entryTime,
-        // exitTime: payload.exitTime
+        entryTime: payload.entryTime,
+        exitTime: payload.exitTime,
+        observation: payload.observation,
       });
       return log;
     } catch (error) {
@@ -36,7 +37,7 @@ export default class ParkingLogService {
     }
   }
 
-  async getVacancyLogsByOrgatnization(organizationId) {
+  async getVacancyLogsByOrganization(organizationId) {
     try {
       const org = await OrganizationModel.findOne({
         where: { id: organizationId },
@@ -100,7 +101,14 @@ export default class ParkingLogService {
 
   async checkin(payload) {
     try {
-      const { collaboratorId, organizationId, vehiclePlate } = payload;
+      const {
+        collaboratorId,
+        organizationId,
+        vehiclePlate,
+        entryTime,
+        exitTime,
+        observation,
+      } = payload;
 
       const organization = await OrganizationModel.findByPk(organizationId);
       if (!organization) throw new HttpError("Organization not found", 404);
@@ -125,6 +133,7 @@ export default class ParkingLogService {
           organizationId,
         });
       }
+
 
       const alreadyParked = await VacancyModel.findOne({
         where: { vehicleId: vehicle.id, status: 1 },
@@ -157,6 +166,9 @@ export default class ParkingLogService {
         const log = await this.createLog({
           collaboratorId,
           organizationId,
+          entryTime,
+          exitTime,
+          observation,
           vehicleId: vehicle.id,
           vacancyId: updatedVacancy.id,
         });

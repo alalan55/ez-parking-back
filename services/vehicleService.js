@@ -23,7 +23,9 @@ class VehicleService {
 
   async getByPlate(plate) {
     try {
-      const data = await Vehicle.findOne({ where: { plate } });
+      const data = await Vehicle.findOne({
+        where: { plate: plate.toUpperCase() },
+      });
       return data;
     } catch (error) {
       return new Error(error);
@@ -48,17 +50,11 @@ class VehicleService {
       if (!organization)
         throw new Error("Organization not found to add vehicle");
 
-      const existingVehivle = await Vehicle.findOne({
-        where: {
-          plate: {
-            [Op.like]: `%${infos.plate}%`,
-          },
-        },
-      });
+      const existingVehicle = await this.getByPlate(infos.plate);
 
-      if (existingVehivle) {
-        await existingVehivle.addOrganizations(organization);
-        return existingVehivle;
+      if (existingVehicle) {
+        await existingVehicle.addOrganization(organization);
+        return existingVehicle;
       }
 
       const newVehicle = await Vehicle.create({
@@ -70,10 +66,11 @@ class VehicleService {
         type: infos.type,
       });
 
-      await newVehicle.addOrganizations(organization);
+      await newVehicle.addOrganization(organization);
 
       return newVehicle;
     } catch (error) {
+      console.error("Error creating vehicle:", error);
       return new Error(error);
     }
   }

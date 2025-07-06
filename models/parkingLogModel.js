@@ -9,11 +9,11 @@ import Vehicle from "./vehicleModel.js";
 const ParkingLogModel = sequelize.define("ParkingLog", {
   entryTime: {
     type: DataTypes.TIME,
-    allowNull: false,
+    allowNull: true,
   },
   exitTime: {
     type: DataTypes.TIME,
-    allowNull: false,
+    allowNull: true,
   },
   observation: {
     type: DataTypes.STRING,

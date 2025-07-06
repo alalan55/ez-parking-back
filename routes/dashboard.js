@@ -11,7 +11,7 @@ const organizationController = new OrganizationControler();
 const vacancyController = new VacancyController();
 
 // router.get("/vacancies-by-organization/:id", (req, res) =>
-//   parkingLogController.getVacancyLogsByOrgatnization(req, res)
+//   parkingLogController.getVacancyLogsByOrganization(req, res)
 // );
 
 router.get("/vacancies-by-organization/:id", (req, res) =>

@@ -7,14 +7,17 @@ const parkingLogService = new ParkingLogService();
 
 const checkinSchema = z.object({
   collaboratorId: z.number().min(0, "Collaborator ID is required"),
-  organizationId: z.string().min(0, "Collaborator ID is required"),
+  organizationId: z.number().min(0, "Collaborator ID is required"),
   vehiclePlate: z.string().min(1, "Vehicle plate is required"),
+  entryTime: z.string().min(1, "Entry time is required"),
+  exitTime: z.string().optional(),
+  observation: z.string().optional(),
 });
 
 export default class ParkingLogController {
-  async getVacancyLogsByOrgatnization(req, res) {
+  async getVacancyLogsByOrganization(req, res) {
     try {
-      const logs = await parkingLogService.getVacancyLogsByOrgatnization(
+      const logs = await parkingLogService.getVacancyLogsByOrganization(
         req.params.id
       );
       res.status(200).send(ResponseHandler("Logs retrieved", logs));
@@ -38,7 +41,7 @@ export default class ParkingLogController {
   async checkin(req, res) {
     try {
       const validated = checkinSchema.safeParse(req.body);
-      
+
       if (!validated.success) {
         const err = ErrorValidationHandler(validated);
         return res.status(err.status).send(ResponseHandler(err.errors));
