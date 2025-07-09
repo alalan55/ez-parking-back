@@ -128,6 +128,7 @@ class VehicleService {
             through: { attributes: [] },
           },
           {
+            as: "clients",
             model: ClientModel,
             where: { id },
             attributes: [],
