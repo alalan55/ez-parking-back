@@ -14,6 +14,14 @@ const checkinSchema = z.object({
   observation: z.string().optional(),
 });
 
+const checkoutSchema = z.object({
+  vacancyId: z.number().min(0, "Vacancy ID is required"),
+  exitTime: z.string().min(1, "Exit time is required"),
+  logId: z.number().min(0, "Log ID is required"),
+  collaboratorId: z.number().min(0, "Collaborator ID is required"),
+  organizationId: z.number().min(0, "Organization ID is required"),
+});
+
 export default class ParkingLogController {
   async getVacancyLogsByOrganization(req, res) {
     try {
@@ -58,6 +66,13 @@ export default class ParkingLogController {
 
   async checkout(req, res) {
     try {
+      const validated = checkoutSchema.safeParse(req.body);
+
+      if (!validated.success) {
+        const err = ErrorValidationHandler(validated);
+        return res.status(err.status).send(ResponseHandler(err.errors));
+      }
+
       const checkout = await parkingLogService.checkout(req.body);
       res.status(200).send(ResponseHandler("Check-out successful", checkout));
     } catch (error) {
