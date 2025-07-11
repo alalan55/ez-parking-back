@@ -30,7 +30,7 @@ router.get("/logs-by-organization/:id", (req, res) =>
 
 router.post("/checkin", (req, res) => parkingLogController.checkin(req, res));
 
-router.post("/checkout/:id", (req, res) =>
+router.post("/checkout", (req, res) =>
   parkingLogController.checkout(req, res)
 );
 

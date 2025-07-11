@@ -134,7 +134,6 @@ export default class ParkingLogService {
         });
       }
 
-
       const alreadyParked = await VacancyModel.findOne({
         where: { vehicleId: vehicle.id, status: 1 },
       });
@@ -218,7 +217,7 @@ export default class ParkingLogService {
         });
       }
 
-      await log.update({ updatedAt: new Date() });
+      await log.update({ exitTime: payload.exitTime });
 
       return log;
     } catch (error) {
