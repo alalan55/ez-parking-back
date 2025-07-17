@@ -22,6 +22,12 @@ export const ConvertMinutesToHoursFormated = (minutes) => {
   return `${hours}h ${mins}minutos`;
 };
 
+export const ConvertMinutesToHours = (minutes) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return { hours, mins };
+};
+
 export class HttpError extends Error {
   constructor(message, status) {
     super(message);
