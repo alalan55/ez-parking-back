@@ -3,6 +3,7 @@ import OrganizationService from "./OrganizationService.js";
 import ParkingLogService from "./ParkingLogService.js";
 import {
   HttpError,
+  ConvertMinutesToHours,
   ConvertMinutesToHoursFormated,
 } from "../helpers/helpers.js";
 
@@ -46,6 +47,10 @@ class MetricService {
       }, 0);
 
       const averageStay = totalMinutes / logsCompleted.length;
+      const { hours, minutes } = ConvertMinutesToHours(averageStay);
+
+      const totalRevenue =
+        (hours ? hours : 0) * 60 + (minutes ? minutes : 0) * 7; // assuming 7 is the rate per hour
 
       const response = {
         averageStay: isNaN(averageStay)
@@ -53,6 +58,7 @@ class MetricService {
           : ConvertMinutesToHoursFormated(averageStay),
         totalLogs: logsCompleted.length,
         logsCompleted,
+        totalRevenue,
       };
 
       return response;
