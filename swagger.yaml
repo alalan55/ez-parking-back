@@ -1,0 +1,327 @@
+openapi: 3.0.0
+info:
+  title: Ez Parking API
+  version: 1.0.0
+tags:
+  - name: Vehicles
+    description: Gerenciamento de veículos
+  - name: Clients
+    description: Gerenciamento de clientes
+
+paths:
+  /vehicle:
+    get:
+      summary: Lista todos os veículos
+      tags: [Vehicles]
+      responses:
+        200:
+          description: Lista de veículos retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Vehicle'
+    post:
+      summary: Cria um novo veículo
+      tags: [Vehicles]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+      responses:
+        201:
+          description: Veículo criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+
+  /vehicle/{id}:
+    get:
+      summary: Busca um veículo pelo ID
+      tags: [Vehicles]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID do veículo
+      responses:
+        200:
+          description: Veículo encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        404:
+          description: Veículo não encontrado
+    put:
+      summary: Atualiza um veículo pelo ID
+      tags: [Vehicles]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID do veículo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Vehicle'
+      responses:
+        200:
+          description: Veículo atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        404:
+          description: Veículo não encontrado
+    delete:
+      summary: Remove um veículo pelo ID
+      tags: [Vehicles]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID do veículo
+      responses:
+        200:
+          description: Veículo removido com sucesso
+        404:
+          description: Veículo não encontrado
+
+  /client:
+    post:
+      summary: Cria um novo cliente
+      tags: [Clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        201:
+          description: Cliente criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+    get:
+      summary: Lista todos os clientes
+      tags: [Clients]
+      responses:
+        200:
+          description: Lista de clientes retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+    put:
+      summary: Atualiza um cliente
+      tags: [Clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+      responses:
+        200:
+          description: Cliente atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+
+  /client/{id}:
+    get:
+      summary: Busca um cliente pelo ID
+      tags: [Clients]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID do cliente
+      responses:
+        200:
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        404:
+          description: Cliente não encontrado
+    delete:
+      summary: Remove um cliente pelo ID
+      tags: [Clients]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID do cliente
+      responses:
+        200:
+          description: Cliente removido com sucesso
+        404:
+          description: Cliente não encontrado
+
+  /client/with-vehicle:
+    post:
+      summary: Cria um cliente já associado a um veículo
+      tags: [Clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Client'
+                - type: object
+                  properties:
+                    vehicle:
+                      $ref: '#/components/schemas/Vehicle'
+      responses:
+        201:
+          description: Cliente e veículo criados com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/Client'
+                  vehicle:
+                    $ref: '#/components/schemas/Vehicle'
+
+  /client/add-vehicle:
+    post:
+      summary: Adiciona um veículo a um cliente existente
+      tags: [Clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                plate:
+                  type: string
+                mark:
+                  type: string
+                model:
+                  type: string
+                year:
+                  type: integer
+                color:
+                  type: string
+                type:
+                  type: integer
+      responses:
+        200:
+          description: Veículo adicionado ao cliente com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/Client'
+                  vehicle:
+                    $ref: '#/components/schemas/Vehicle'
+
+  /client/remove-vehicle:
+    post:
+      summary: Remove um veículo de um cliente
+      tags: [Clients]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                vehicleId:
+                  type: integer
+      responses:
+        200:
+          description: Veículo removido do cliente com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/Client'
+                  vehicle:
+                    $ref: '#/components/schemas/Vehicle'
+
+components:
+  schemas:
+    Vehicle:
+      type: object
+      required:
+        - plate
+        - mark
+      properties:
+        id:
+          type: integer
+          description: ID do veículo
+        plate:
+          type: string
+          description: Placa do veículo
+        mark:
+          type: string
+          description: Marca do veículo
+        model:
+          type: string
+          description: Modelo do veículo
+        year:
+          type: integer
+          description: Ano do veículo
+        color:
+          type: string
+          description: Cor do veículo
+        type:
+          type: integer
+          description: Tipo do veículo
+
+    Client:
+      type: object
+      required:
+        - name
+        - phone
+      properties:
+        id:
+          type: integer
+          description: ID do cliente
+        name:
+          type: string
+          description: Nome do cliente
+        phone:
+          type: string
+          description: Telefone do cliente
+        vehicles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vehicle'
