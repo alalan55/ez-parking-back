@@ -15,3 +15,16 @@ export const ErrorValidationHandler = (infos) => {
     errors,
   };
 };
+
+export const ConvertMinutesToHoursFormated = (minutes) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}h ${mins}minutos`;
+};
+
+export class HttpError extends Error {
+  constructor(message, status) {
+    super(message);
+    this.status = status;
+  }
+}

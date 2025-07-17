@@ -13,6 +13,7 @@ import CollaboratorRouter from "./routes/collaborator.js";
 import ParkingLogRouter from "./routes/parkingLog.js";
 import VacancyRouter from "./routes/vacancy.js";
 import DashboardRouter from "./routes/dashboard.js";
+import MetricRouter from "./routes/metrics.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/collaborator", CollaboratorRouter);
 app.use("/parking-log", ParkingLogRouter);
 app.use("/vacancy", VacancyRouter);
 app.use("/dash", DashboardRouter);
+app.use("/metric", MetricRouter);
 
 app.get("/", (req, res) => res.send("Health"));
 

@@ -1,3 +1,5 @@
+import { Op } from "sequelize";
+
 import {
   ParkingLogModel,
   OrganizationModel,
@@ -220,6 +222,23 @@ export default class ParkingLogService {
       await log.update({ exitTime: payload.exitTime });
 
       return log;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getLogsBasedOnRange(organizationId, startDate, endDate) {
+    try {
+      const logs = await ParkingLogModel.findAll({
+        where: {
+          organizationId,
+          entryTime: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+      });
+
+      return logs;
     } catch (error) {
       throw error;
     }
