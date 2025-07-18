@@ -19,7 +19,7 @@ export const ErrorValidationHandler = (infos) => {
 export const ConvertMinutesToHoursFormated = (minutes) => {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
-  return `${hours}h ${mins}minutos`;
+  return `${hours}h ${mins ? mins.toFixed() : 0}minutos`;
 };
 
 export const ConvertMinutesToHours = (minutes) => {

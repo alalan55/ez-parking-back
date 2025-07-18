@@ -1,6 +1,8 @@
 import { Op } from "sequelize";
 import OrganizationService from "./OrganizationService.js";
 import ParkingLogService from "./ParkingLogService.js";
+import VacancyService from "./VacancyService.js";
+
 import {
   HttpError,
   ConvertMinutesToHours,
@@ -9,6 +11,7 @@ import {
 
 const organizationService = new OrganizationService();
 const parkingLogService = new ParkingLogService();
+const vacancyService = new VacancyService();
 
 class MetricService {
   async getAverageDailyStay(orgId) {
@@ -47,10 +50,19 @@ class MetricService {
       }, 0);
 
       const averageStay = totalMinutes / logsCompleted.length;
-      const { hours, minutes } = ConvertMinutesToHours(averageStay);
+
+      const { hours, minutes } = ConvertMinutesToHours(totalMinutes);
 
       const totalRevenue =
-        (hours ? hours : 0) * 60 + (minutes ? minutes : 0) * 7; // assuming 7 is the rate per hour
+        ((hours ? hours : 0) * 60 + (minutes ? minutes : 0)) * (7 / 60); // assuming 7 is the value per hour
+
+      const occupied =
+        await vacancyService.getVacancysCoutenByStatusAndOrganization(
+          organization.id,
+          1
+        );
+
+      const occupancyRate = (occupied / organization.vacanciesQuantity) * 100;
 
       const response = {
         averageStay: isNaN(averageStay)
@@ -59,6 +71,7 @@ class MetricService {
         totalLogs: logsCompleted.length,
         logsCompleted,
         totalRevenue,
+        occupancyRate,
       };
 
       return response;
