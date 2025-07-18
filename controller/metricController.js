@@ -23,6 +23,25 @@ class MetricController {
         );
     }
   }
+
+  async getVacancyUsageGraph(req, res) {
+    try {
+      const orgId = req.params.orgId;
+      const graphData = await metricService.getVacancyUtilizationGraph(orgId);
+
+      res
+        .status(200)
+        .send(ResponseHandler("Vacancy usage graph retrieved", graphData));
+    } catch (error) {
+      res
+        .status(error.status || 400)
+        .send(
+          ResponseHandler(
+            error.message || "Fail to retrieve vacancy usage graph"
+          )
+        );
+    }
+  }
 }
 
 export default MetricController;
