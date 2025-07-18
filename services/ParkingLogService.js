@@ -1,4 +1,4 @@
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 import {
   ParkingLogModel,
@@ -239,6 +239,51 @@ export default class ParkingLogService {
       });
 
       return logs;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getLogsBasedOnRangeGroupedByDay(organizationId, startDate, endDate) {
+    try {
+      const weekDays = [
+        "Domingo",
+        "Segunda",
+        "Terça",
+        "Quarta",
+        "Quinta",
+        "Sexta",
+        "Sábado",
+      ];
+
+      const logs = await ParkingLogModel.findAll({
+        where: {
+          organizationId,
+          entryTime: {
+            [Op.between]: [startDate, endDate],
+          },
+        },
+
+        attributes: [
+          [Sequelize.literal("strftime('%w', entryTime)"), "weekday"],
+          [Sequelize.fn("COUNT", Sequelize.col("id")), "count"],
+        ],
+        group: ["weekday"],
+        order: [[Sequelize.literal("weekday"), "ASC"]],
+      });
+
+      const logsMap = {};
+
+      logs.forEach((log) => {
+        logsMap[log.get("weekday")] = log.get("count");
+      });
+
+      const result = weekDays.map((name, idx) => ({
+        weekday: name,
+        count: logsMap[idx] ? logsMap[idx] : 0,
+      }));
+
+      return result;
     } catch (error) {
       throw error;
     }
