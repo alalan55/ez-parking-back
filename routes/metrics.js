@@ -8,4 +8,8 @@ router.get("/average-daily-stay/:orgId", (req, res) =>
   metricController.getAverageDailyStay(req, res)
 );
 
+router.get("/vacancy-usage-graph/:orgId", (req, res) =>
+  metricController.getVacancyUsageGraph(req, res)
+);
+
 export default router;

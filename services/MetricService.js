@@ -79,6 +79,38 @@ class MetricService {
       throw error;
     }
   }
+
+  async getVacancyUtilizationGraph(orgId) {
+    try {
+      const organization = await organizationService.findById(orgId);
+      if (!organization) throw new HttpError("Organization not found", 404);
+
+      // get last 30 days
+      const today = new Date();
+
+      const startDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() - 30
+      );
+
+      const endDate = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate() + 1
+      );
+
+      const logs = await parkingLogService.getLogsBasedOnRangeGroupedByDay(
+        organization.id,
+        startDate,
+        endDate
+      );
+
+      return logs;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export default MetricService;
