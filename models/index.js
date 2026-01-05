@@ -4,6 +4,7 @@ import OrganizationModel from "./organizationModel.js";
 import VacancyModel from "./vacancyModel.js";
 import ParkingLogModel from "./parkingLogModel.js";
 import CollaboratorModel from "./collaboratorModel.js";
+import ClientOrganizationModel from "./clientOrganizationModel.js";
 
 export {
   Vehicle,
@@ -12,4 +13,5 @@ export {
   VacancyModel,
   ParkingLogModel,
   CollaboratorModel,
+  ClientOrganizationModel
 };
