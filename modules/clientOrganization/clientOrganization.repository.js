@@ -1,4 +1,4 @@
-import { ClientOrganizationModel } from "../../models/index.js";
+import ClientOrganizationModel from "./clientOrganization.model.js";
 
 class ClientOrganizationRepository {
   link(transaction, clientId, organizationId) {
