@@ -1,4 +1,4 @@
-import AppError from "./errors/AppError.js";
+import AppError from "../errors/appError.js";
 import { ValidationError } from "sequelize";
 
 export function errorHandler(err, req, res, next) {

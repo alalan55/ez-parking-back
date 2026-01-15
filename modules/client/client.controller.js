@@ -43,6 +43,32 @@ class ClientController {
     res.status(201).send(ResponseHandler("Created", response));
   }
 
+  async addVehicle(req, res) {
+    const validated = addVehicleSchema.safeParse(req.body);
+
+    if (!validated.success) {
+      const errors = validated.error.errors.map((err) => err.message);
+      throw new AppError(errors, 400);
+    }
+
+    const response = await clientService.addVehicle(req.body);
+
+    res.status(200).send(ResponseHandler("Vehicle added", response));
+  }
+
+  async removeVehicle(req, res){
+    const validated = removeVehicleSchema.safeParse(req.body);
+
+    if (!validated.success) {
+      const errors = validated.error.errors.map((err) => err.message);
+      throw new AppError(errors, 400);
+    }
+
+    const response = await clientService.removeVehicle(req.body);
+
+    res.status(200).send(ResponseHandler("Vehicle removed", response));
+  }
+
   async getAll(req, res) {
     const users = await clientService.getAll();
 
@@ -92,14 +118,6 @@ class ClientController {
     res.status(200).send(ResponseHandler("User updated", updatedUser));
   }
 
-  async createWithVehicle(req, res) {
-    const validated = createUserWithVehicleSchema.safeParse(req.body);
-
-    if (!validated.success) {
-      const errors = validated.error.errors.map((err) => err.message);
-      throw new AppError(errors, 400);
-    }
-  }
 }
 
 export default ClientController;

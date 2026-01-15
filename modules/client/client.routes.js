@@ -1,4 +1,4 @@
-import express from "express;";
+import express from "express";
 import ClientController from "./client.controller.js";
 
 const router = express.Router();
@@ -19,6 +19,12 @@ router.delete("/delete-from-organization/:organizationId/:id", (req, res) =>
 router.post("/with-vehicle", (req, res) =>
   controller.createWithVehicle(req, res)
 );
+
+router.post("/add-vehicle", (req, res) => controller.addVehicle(req, res));
+
+router.post("/remove-vehicle", (req, res) =>
+  controller.removeVehicle(req, res)
+);
 //#endregion
 
 //#region Client Routes CRUD
@@ -29,3 +35,6 @@ router.get("/:id", (req, res) => controller.getById(req, res));
 router.delete("/:id", (req, res) => controller.delete(req, res));
 
 //#endregion
+
+
+export default router;

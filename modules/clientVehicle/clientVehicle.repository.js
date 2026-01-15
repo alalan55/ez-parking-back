@@ -1,4 +1,4 @@
-import ClientVehicleModel from "./clientVehicle.model";
+import ClientVehicleModel from "./clientVehicle.model.js";
 
 class ClientVehicleRepository {
   link({ transaction, clientId, vehicleId } = {}) {
@@ -9,6 +9,17 @@ class ClientVehicleRepository {
       },
       transaction ? { transaction } : {}
     );
+  }
+
+  unlink({ transaction, clientId, vehicleId } = {}) {
+    const options = {
+      where: {
+        clientId,
+        vehicleId,
+      },
+    };
+    if (transaction) options.transaction = transaction;
+    return ClientVehicleModel.destroy(options);
   }
 }
 

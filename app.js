@@ -6,9 +6,11 @@ import { errorHandler } from "./shared/http/errorHandler.js";
 import cors from "cors";
 
 import "./models/index.js";
+import "./modules/models.js";
 
 import vehicleRouter from "./routes/vehicle.js";
-import clientRouter from "./routes/client.js";
+// import clientRouter from "./routes/client.js";
+import clientRouter from "./modules/client/client.routes.js";
 import OrganizationRouter from "./routes/organization.js";
 import CollaboratorRouter from "./routes/collaborator.js";
 import ParkingLogRouter from "./routes/parkingLog.js";

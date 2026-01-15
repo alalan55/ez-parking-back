@@ -94,6 +94,89 @@ class ClientService {
     });
   }
 
+  async addVehicle(payload) {
+    return this.sequelize.transaction(async (transaction) => {
+      const client = await this.clientRepo.findById({
+        id: payload.userId,
+        transaction,
+      });
+
+      if (!client) throw new AppError("Client not found", 404);
+
+      const organization = await this.organizationRepo.findById(
+        transaction,
+        payload.organizationId
+      );
+
+      if (!organization) throw new AppError("Organization not found", 404);
+
+      let vehicle = await this.vehicleRepo.getByPlate({
+        plate: payload.plate,
+        transaction,
+      });
+
+      if (!vehicle) {
+        vehicle = await this.vehicleRepo.create({
+          transaction,
+          payload: {
+            plate: payload.plate,
+            mark: payload.mark,
+            model: payload.model,
+            year: payload.year,
+            color: payload.color,
+            type: payload.type,
+            organizationId: payload.organizationId,
+          },
+        });
+      } else {
+        await this.vehicleRepo.update({
+          transaction,
+          id: vehicle.id,
+          payload: {
+            mark: payload.mark,
+            model: payload.model,
+            year: payload.year,
+            color: payload.color,
+            type: payload.type,
+            organizationId: payload.organizationId,
+          },
+        });
+      }
+
+      await this.clientVehicleRepo.link({
+        transaction,
+        clientId: client.id,
+        vehicleId: vehicle.id,
+      });
+      return { client, vehicle };
+    });
+  }
+
+  async removeVehicle(payload) {
+    return this.sequelize.transaction(async (transaction) => {
+      const client = await this.clientRepo.findById({
+        id: payload.userId,
+        transaction,
+      });
+
+      if (!client) throw new AppError("Client not found", 404);
+
+      const vehicle = await this.vehicleRepo.findById({
+        id: payload.vehicleId,
+        transaction,
+      });
+
+      if (!vehicle) throw new AppError("Vehicle not found", 404);
+
+      await this.clientVehicleRepo.unlink({
+        transaction,
+        clientId: client.id,
+        vehicleId: vehicle.id,
+      });
+      return { client, vehicle };
+    });
+  }
+
   async getAll() {
     return this.clientRepo.getAll();
   }
@@ -150,6 +233,7 @@ class ClientService {
 
     return this.clientRepo.update({ id: payload.id, payload });
   }
+  
 }
 
 export default ClientService;
