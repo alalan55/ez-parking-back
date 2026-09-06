@@ -1,5 +1,4 @@
 import { DataTypes } from "sequelize";
-import { OrganizationModel } from "../models.js";
 import sequelize from "../../config/db.js";
 
 const roleEnum = {
@@ -26,6 +25,11 @@ const CollaboratorModel = sequelize.define("Collaborator", {
     type: DataTypes.NUMBER,
     allowNull: false,
     defaultValue: 2,
+  },
+  active: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true,
   },
 });
 

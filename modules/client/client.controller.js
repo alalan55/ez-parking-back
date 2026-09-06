@@ -18,6 +18,9 @@ const clientService = makeClientService();
 
 class ClientController {
   async create(req, res) {
+    req.body.collaboratorId = req.auth.collaboratorId;
+    req.body.organizationId = req.auth.organizationId;
+
     const validated = createUserSchema.safeParse(req.body);
 
     if (!validated.success) {
@@ -31,6 +34,8 @@ class ClientController {
   }
 
   async createWithVehicle(req, res) {
+    req.body.organizationId = req.auth.organizationId;
+
     const validated = createUserWithVehicleSchema.safeParse(req.body);
 
     if (!validated.success) {
@@ -44,6 +49,9 @@ class ClientController {
   }
 
   async addVehicle(req, res) {
+    req.body.collaboratorId = req.auth.collaboratorId;
+    req.body.organizationId = req.auth.organizationId;
+
     const validated = addVehicleSchema.safeParse(req.body);
 
     if (!validated.success) {
@@ -57,6 +65,9 @@ class ClientController {
   }
 
   async removeVehicle(req, res){
+    req.body.collaboratorId = req.auth.collaboratorId;
+    req.body.organizationId = req.auth.organizationId;
+
     const validated = removeVehicleSchema.safeParse(req.body);
 
     if (!validated.success) {
@@ -75,8 +86,8 @@ class ClientController {
     res.status(200).send(ResponseHandler("Users retrieved", users));
   }
 
-  async getAllFromOrganization(req, res) {
-    const { organizationId } = req.params;
+  async getAllClientsFromOrganization(req, res) {
+    const organizationId = req.params.id;
 
     const querys = req.query;
 
@@ -89,9 +100,11 @@ class ClientController {
   }
 
   async deleteFromOrganization(req, res) {
-    const { organizationId, id } = req.params;
+    const { id } = req.params;
 
-    await clientService.deleteFromOrganization(+organizationId, +id);
+    // Ignore whatever organizationId the URL carries — a collaborator can
+    // only ever remove a client from their own organization.
+    await clientService.deleteFromOrganization(req.auth.organizationId, +id, req.auth.collaboratorId);
 
     res.status(200).send(ResponseHandler("User removed from organization"));
   }
@@ -113,6 +126,9 @@ class ClientController {
   }
 
   async update(req, res) {
+    req.body.collaboratorId = req.auth.collaboratorId;
+    req.body.organizationId = req.auth.organizationId;
+
     const updatedUser = await clientService.update(req.body);
 
     res.status(200).send(ResponseHandler("User updated", updatedUser));

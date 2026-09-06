@@ -1,11 +1,12 @@
 import express from "express";
 import ClientController from "./client.controller.js";
+import { ownOrganizationOnly } from "../../shared/http/authenticate.js";
 
 const router = express.Router();
 const controller = new ClientController();
 
 //#region Client Routes by Organization
-router.get("/get-all-by-organization/:id", (req, res) =>
+router.get("/get-all-by-organization/:id", ownOrganizationOnly("id"), (req, res) =>
   controller.getAllClientsFromOrganization(req, res)
 );
 

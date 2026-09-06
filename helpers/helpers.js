@@ -18,8 +18,8 @@ export const ErrorValidationHandler = (infos) => {
 
 export const ConvertMinutesToHoursFormated = (minutes) => {
   const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours}h ${mins ? mins.toFixed() : 0}minutos`;
+  const mins = Math.round(minutes % 60);
+  return `${hours}h ${String(mins).padStart(2, "0")}m`;
 };
 
 export const ConvertMinutesToHours = (minutes) => {

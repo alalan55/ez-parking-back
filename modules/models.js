@@ -6,8 +6,32 @@ import CollaboratorModel from "./collaborator/collaborator.model.js";
 import VehicleModel from "./vehicle/vehicle.model.js";
 import ParkingLogModel from "./parkingLog/parkingLog.model.js";
 import VacancyModel from "./vacancy/vacancy.model.js";
+import AuditLogModel from "./auditLog/auditLog.model.js";
 
 //#region Associations
+
+// Client - Vehicle / Client - Organization
+ClientModel.belongsToMany(VehicleModel, {
+  as: "vehicles",
+  through: "ClientVehicles",
+  foreignKey: { name: "clientId" },
+});
+
+VehicleModel.belongsToMany(ClientModel, {
+  as: "clients",
+  through: "ClientVehicles",
+  foreignKey: { name: "vehicleId" },
+});
+
+ClientModel.belongsToMany(OrganizationModel, {
+  through: "ClientOrganizations",
+  foreignKey: { name: "clientId" },
+});
+
+OrganizationModel.belongsToMany(ClientModel, {
+  through: "ClientOrganizations",
+  foreignKey: { name: "organizationId" },
+});
 
 //  Vehicle - Organization
 VehicleModel.belongsToMany(OrganizationModel, {
@@ -117,6 +141,16 @@ VacancyModel.belongsTo(VehicleModel, {
   onDelete: "SET NULL",
 });
 
+// AuditLog - Collaborator
+AuditLogModel.belongsTo(CollaboratorModel, {
+  as: "collaborator",
+  foreignKey: { name: "collaboratorId", allowNull: true },
+});
+
+CollaboratorModel.hasMany(AuditLogModel, {
+  foreignKey: { name: "collaboratorId", allowNull: true },
+});
+
 //#endregion
 
 export {
@@ -127,4 +161,6 @@ export {
   CollaboratorModel,
   VehicleModel,
   ParkingLogModel,
+  VacancyModel,
+  AuditLogModel,
 };

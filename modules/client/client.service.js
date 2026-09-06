@@ -9,6 +9,7 @@ class ClientService {
     clientOrganizationRepo,
     vehicleRepo,
     clientVehicleRepo,
+    auditLogService,
     sequelize,
   }) {
     this.clientRepo = clientRepo;
@@ -16,6 +17,7 @@ class ClientService {
     this.clientOrganizationRepo = clientOrganizationRepo;
     this.vehicleRepo = vehicleRepo;
     this.clientVehicleRepo = clientVehicleRepo;
+    this.auditLogService = auditLogService;
     this.sequelize = sequelize;
   }
 
@@ -34,10 +36,10 @@ class ClientService {
       });
 
       if (organizationId) {
-        const organization = await this.organizationRepo.findById(
-          organizationId,
-          transaction
-        );
+        const organization = await this.organizationRepo.findById({
+          id: organizationId,
+          transaction,
+        });
 
         if (!organization) throw new AppError("Organization not found");
 
@@ -46,6 +48,16 @@ class ClientService {
           newClient.id,
           organizationId
         );
+
+        await this.auditLogService.record({
+          organizationId,
+          collaboratorId: payload.collaboratorId,
+          action: "created",
+          resource: "Cliente",
+          resourceId: newClient.id,
+          description: `Novo cliente cadastrado: ${newClient.name}`,
+          transaction,
+        });
       }
 
       return newClient;
@@ -103,10 +115,10 @@ class ClientService {
 
       if (!client) throw new AppError("Client not found", 404);
 
-      const organization = await this.organizationRepo.findById(
+      const organization = await this.organizationRepo.findById({
+        id: payload.organizationId,
         transaction,
-        payload.organizationId
-      );
+      });
 
       if (!organization) throw new AppError("Organization not found", 404);
 
@@ -148,6 +160,17 @@ class ClientService {
         clientId: client.id,
         vehicleId: vehicle.id,
       });
+
+      await this.auditLogService.record({
+        organizationId: payload.organizationId,
+        collaboratorId: payload.collaboratorId,
+        action: "updated",
+        resource: "Veículo",
+        resourceId: vehicle.id,
+        description: `Veículo ${vehicle.plate?.toUpperCase()} vinculado a ${client.name}`,
+        transaction,
+      });
+
       return { client, vehicle };
     });
   }
@@ -173,6 +196,17 @@ class ClientService {
         clientId: client.id,
         vehicleId: vehicle.id,
       });
+
+      await this.auditLogService.record({
+        organizationId: payload.organizationId,
+        collaboratorId: payload.collaboratorId,
+        action: "updated",
+        resource: "Veículo",
+        resourceId: vehicle.id,
+        description: `Veículo ${vehicle.plate?.toUpperCase()} desvinculado de ${client.name}`,
+        transaction,
+      });
+
       return { client, vehicle };
     });
   }
@@ -190,12 +224,12 @@ class ClientService {
     return this.clientRepo.getAllByOrganiztion({ organizationId, where });
   }
 
-  async deleteFromOrganization(organizationId, clientId) {
+  async deleteFromOrganization(organizationId, clientId, collaboratorId) {
     return this.sequelize.transaction(async (transaction) => {
-      const organization = await this.organizationRepo.findById(
-        organizationId,
-        transaction
-      );
+      const organization = await this.organizationRepo.findById({
+        id: organizationId,
+        transaction,
+      });
 
       if (!organization) throw new AppError("Organization not found", 404);
 
@@ -211,6 +245,16 @@ class ClientService {
         clientId,
         organizationId
       );
+
+      await this.auditLogService.record({
+        organizationId,
+        collaboratorId,
+        action: "deleted",
+        resource: "Cliente",
+        resourceId: client.id,
+        description: `Cliente removido: ${client.name}`,
+        transaction,
+      });
     });
   }
 
@@ -231,9 +275,26 @@ class ClientService {
 
     if (!user) throw new AppError("User not found", 404);
 
-    return this.clientRepo.update({ id: payload.id, payload });
+    const changes = ["name", "phone"]
+      .filter((field) => payload[field] !== undefined && payload[field] !== user[field])
+      .map((field) => ({ field, before: user[field], after: payload[field] }));
+
+    const result = await this.clientRepo.update({ id: payload.id, payload });
+
+    if (changes.length) {
+      await this.auditLogService.record({
+        organizationId: payload.organizationId,
+        collaboratorId: payload.collaboratorId,
+        action: "updated",
+        resource: "Cliente",
+        resourceId: user.id,
+        description: `Dados atualizados: ${user.name} (${changes.map((c) => c.field).join(", ")})`,
+        metadata: changes,
+      });
+    }
+
+    return result;
   }
-  
 }
 
 export default ClientService;

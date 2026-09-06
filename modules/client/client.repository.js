@@ -1,4 +1,6 @@
-import { ClientModel, Vehicle, OrganizationModel } from "../../models/index.js";
+import ClientModel from "./client.model.js";
+import OrganizationModel from "../organization/organization.model.js";
+import VehicleModel from "../vehicle/vehicle.model.js";
 
 class UserRepository {
   create({ transaction, payload } = {}) {
@@ -20,6 +22,12 @@ class UserRepository {
           where: { id: organizationId },
           through: { attributes: [] },
           attributes: [],
+        },
+        {
+          model: VehicleModel,
+          as: "vehicles",
+          through: { attributes: [] },
+          attributes: ["id", "plate"],
         },
       ],
     });

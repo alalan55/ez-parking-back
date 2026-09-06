@@ -7,15 +7,18 @@ const ClientOrganizationModel = sequelize.define(
     clientId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
     },
     organizationId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
     },
   },
   {
     tableName: "ClientOrganizations",
     timestamps: true,
+    id: false,
   }
 );
 

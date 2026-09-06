@@ -7,15 +7,18 @@ const ClientVehicleModel = sequelize.define(
     clientId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
     },
     vehicleId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      primaryKey: true,
     },
   },
   {
     tableName: "ClientVehicles",
     timestamps: true,
+    id: false,
   }
 );
 

@@ -10,7 +10,7 @@ class ClientOrganizationRepository {
       { transaction }
     );
   }
-  unLink(transaction, clientId, organizationId) {
+  unlink(transaction, clientId, organizationId) {
     return ClientOrganizationModel.destroy({
       where: {
         clientId,
